@@ -1,0 +1,48 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Prompt", sans-serif;
+    /* background-color: ghostwhite; */
+    background-color: rgba(255,255,255,0.55);
+    background-blend-mode: lighten;
+    text-align: center;
+    background-image: url('bg.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+h1{
+    font-family: "Orbitron", sans-serif;
+    font-size:66px;
+    margin-top:-18%;
+    margin-bottom:0%;
+}
+p{
+    color:rgb(4,12,36);
+}
+.section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: all 0.5s ease;
+}
+.hidden {
+    display: none;
+}
+.btn {
+    padding: 10px 20px;
+    background-color: #FFBE1D;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.btn:hover {
+    background-color: #e6a718;
+}
+.concept-intro {
+    margin-top: 20px;
+}

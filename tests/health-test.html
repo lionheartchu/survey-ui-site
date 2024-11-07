@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Orbitron&family=Caudex&family=Audiowide&family= &family=Yrsa&family=Glory&family=Marcellus&family=Titillium+Web&family=Handjet&family=Prompt:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Information Test</title>
+    <link rel="stylesheet" href="health.css">
+    <script defer src="health-script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Background Image and Narrative Section -->
+        <div class="background">
+            <div class="narrative">
+                <h1>Scene 3: The Cave</h1>
+                <p>You wake up in an underwater cave, surrounded by shimmering crystals and a gentle flow of water. The serene, healing environment invites you to explore further.</p>
+                <button id="startJourney">Start Journey</button>
+            </div>
+        </div>
+
+        <!-- Questions Section, initially hidden until Start Journey is clicked -->
+        <div class="question-section hidden" id="questionSection">
+            <div class="question">
+                <h2 id="questionText">Question will appear here</h2>
+                <div class="slider-container">
+                    <span id="sliderLabelLeft" class="slider-label">No</span>
+                    <input type="range" id="responseSlider" min="1" max="5" value="3">
+                    <span id="sliderLabelRight" class="slider-label">Yes</span>
+                </div>
+                <p style="color:rgb(58,76,122);font-size:1.1em;">Your choice: <span id="sliderValue">3</span></p>
+                <button id="nextQuestion">Next</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

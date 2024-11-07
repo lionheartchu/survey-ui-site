@@ -1,0 +1,103 @@
+/* Reset margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: rgba(4,12,36);
+    font-family: "Prompt", sans-serif;
+}
+
+.choice-container {
+    margin-top:4%;
+    display: flex;
+    width: 90%;
+    max-width: 1300px;
+    height:85vh;
+    border: 2px solid white;
+}
+
+.choice-section {
+    flex: 1;
+    position: relative;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-size: cover;
+    background-position: center;
+    transition: background-color 0.3s;
+}
+.content{
+    color:black;
+}
+/* Background images for each section */
+#personal-info {
+    background-image: url('personal-c.jpg');
+    background-color: rgba(255,255,255,0.6);
+    background-blend-mode: lighten;
+}
+#personal-info:hover {
+    background-color: rgba(255,255,255,0.1);
+    background-blend-mode: lighten;
+}
+
+#financial-info {
+    background-image: url('fin-c.jpeg');
+    background-color: rgba(255,255,255,0.6);
+    background-blend-mode: lighten;
+}
+#financial-info:hover {
+    background-color: rgba(255,255,255,0.1);
+    background-blend-mode: lighten;
+}
+#health-info {
+    background-image: url('health-c.png');
+    background-color: rgba(255,255,255,0.6);
+    background-blend-mode: lighten;
+}
+#health-info:hover {
+    background-color: rgba(255,255,255,0.1);
+    background-blend-mode: lighten;
+}
+/* Divider lines */
+.choice-section:not(:last-child) {
+    border-right: 2px solid white;
+}
+.choice-section:hover > .content {
+    color:ghostwhite;
+    font-size:40px;
+}
+
+/* Button styling */
+button {
+    background-color: #FFBE1D;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+    font-family: "Prompt", sans-serif;
+}
+
+button:hover {
+    background-color: #e0a819;
+}
+
+/* Explanation text */
+p {
+    font-size: 14px;
+    margin-top: 10px;
+}
