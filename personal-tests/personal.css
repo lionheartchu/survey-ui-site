@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('def.png');
+    background-size: cover;
+    font-family: "Prompt", sans-serif;
+    transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out;
+    opacity: 1;
+    background-color: rgba(255,255,255,0.1);
+    background-blend-mode: lighten;
+}
+
+body.fading {
+    opacity: 0; /* Make the background fade out */
+}
+
+h1{
+    font-family: "Orbitron", sans-serif;
+    font-size:40px;
+    margin-top:-2%;
+    color:rgb(10,32,90);
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding:10px;
+    opacity: 0; /* Start invisible */
+    animation: fadeInContainer 3s ease forwards; /* Fade-in animation */
+    animation-delay: 1s;
+}
+@keyframes fadeInContainer {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.background {
+    padding: 40px;
+    color: rgb(4,12,36);
+    text-align: center;
+}
+
+.narrative h1 {
+    font-size: 2.2em;
+    margin-bottom: 30px;
+}
+
+.narrative p {
+    font-size: 1.3em;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+button {
+    background-color: rgb(120,204,226);
+    color: rgb(4,12,36);
+    margin-top:2%;
+    padding: 10px 22px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-family: "Prompt", sans-serif;
+}
+
+button:hover {
+    background-color: rgb(115,255,254);
+}
+
+/* Hidden by default */
+.hidden {
+    display: none;
+}
+
+/* Question Section Styling */
+.question-section {
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 24px;
+    margin-bottom:5px;
+    min-height: 150px; /* Minimum height for dynamic adjustment */
+    transition: min-height 0.3s ease-in-out;
+}
+
+.question h2 {
+    margin-bottom: 30px;
+    font-size: 1.4em;
+    color:rgba(4,12,36);
+    font-style: italic;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.slider-label {
+    font-size: 1em;
+    color: rgba(10,32,90);
+    font-weight: bold;
+}
+
+/* input[type="range"] {
+    width: 70%;
+    cursor: pointer;
+} */
+
+input[type="range"] {
+    -webkit-appearance: none; /* Remove default styling */
+    width: 55%;
+    height: 15px;
+    background: #e8e8e8;
+    border-radius: 5px;
+    outline: none;
+    margin-left:2%;
+    margin-right:2%;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 35px;
+    height: 35px;
+    background: rgb(115,255,254);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 35px;
+    height: 35px;
+    background: rgb(115,255,254);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
