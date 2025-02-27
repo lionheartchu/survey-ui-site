@@ -13,115 +13,73 @@ document.addEventListener('DOMContentLoaded', () => {
     // Questions array with labels for each question
     const questions = [
         {
-            text: "When posting personal photos on social media, you prefer:",
-            leftLabel: "Use default open-to-all settings",
-            rightLabel: "Customize privacy controls",
+            text: "When saving images of financial documents, you:",
+            leftLabel: "Auto-upload without review",
+            rightLabel: "Manually control access",
             dataType: "Visual Data",
-            apps: {
-                left: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
-                    name: "Instagram"
-                },
-                right: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
-                    name: "Facebook"
-                }
+            example: {
+                icon: "../images/chase-icon.png", // Update with your actual icon path
+                text: "Bank statements from Chase Mobile"
             }
         },
         {
-            text: "When sending personal messages on Apps, you prefer:",
-            leftLabel: "Keep auto-save and default chat history",
-            rightLabel: "Use apps with self-destruct options",
+            text: "When sending financial details via messages, you:",
+            leftLabel: "Use default messaging",
+            rightLabel: "Opt for encrypted apps",
             dataType: "Communication Data",
-            apps: {
-                left: {
-                    icon: "../images/whatsapp-icon.png", // Updated path with ..
-                    name: "WhatsApp"
-                },
-                right: {
-                    icon: "../images/imessage-icon.svg", // Updated path with ..
-                    name: "iMessage"
-                }
+            example: {
+                icon: "../images/whatsapp-icon.png", // Update with your actual icon path
+                text: "Sending payment confirmations to others on WhatsApp"
             }
         },
         {
-            text: "When creating personal profiles on social platforms, you prefer:",
-            leftLabel: "Share all the info by default",
-            rightLabel: "Manage what's visible selectively",
-            dataType: "Personal Data",
-            apps: {
-                left: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
-                    name: "Facebook"
-                },
-                right: {
-                    icon: "../images/linkedin-icon.png", // Updated path with ..
-                    name: "LinkedIn"
-                }
+            text: "When sharing your sensitive financial details online, you:",
+            leftLabel: "Rely on provider's security",
+            rightLabel: "Review and adjust settings yourself",
+            dataType: "Personal data",
+            example: {
+                icon: "../images/paypal-icon.png", // Update with your actual icon path
+                text: "credit card information on PayPal"
             }
         },
         {
-            text: "When apps analyze your data to suggest interests, you prefer:",
-            leftLabel: "Allow full tracking for convenience",
-            rightLabel: "Limit data collection for privacy",
+            text: "For financial apps analyzing your spending, you:",
+            leftLabel: "Grant full data access",
+            rightLabel: "Restrict data sharing",
             dataType: "Cognitive Data",
-            apps: {
-                left: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
-                    name: "Facebook"
-                },
-                right: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
-                    name: "Instagram"
-                }
+            example: {
+                icon: "../images/empower-icon.svg", // Update with your actual icon path
+                text: "apps that track your spending & budgeting like Empower"
             }
         },
         {
-            text: "When using voice assistants, you prefer:",
-            leftLabel: "Keep default recording settings",
-            rightLabel: "Opt for enhanced privacy controls",
+            text: "For voice-based financial inquiries, you prefer:",
+            leftLabel: "Stick with default voice settings",
+            rightLabel: "Choose platforms with enhanced privacy",
             dataType: "Audio Data",
-            apps: {
-                left: {
-                    icon: "../images/siri-icon.png", // Updated path with ..
-                    name: "Siri"
-                },
-                right: {
-                    icon: "../images/google-assistant-icon.png", // Updated path with ..
-                    name: "Google Assistant"
-                }
+            example: {
+                icon: "../images/apple-pay-icon.png", // Update with your actual icon path
+                text: "using Siri for Apple Pay"
             }
         },
         {
-            text: "When using apps that track your locations for social features, you prefer:",
-            leftLabel: "Enable continuous location sharing",
+            text: "For apps using your location to offer financial services, you prefer:",
+            leftLabel: "Allow continuous tracking",
             rightLabel: "Share location only when needed",
             dataType: "Geolocation Data",
-            apps: {
-                left: {
-                    icon: "../images/google-maps-icon.png", // Updated path with ..
-                    name: "Google Maps"
-                },
-                right: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
-                    name: "Instagram"
-                }
+            example: {
+                icon: "../images/google-maps-icon.png", // Update with your actual icon path
+                text: "using Google Maps to find nearby ATMs"
             }
         },
         {
-            text: "When using biometric login to access personal accounts, you prefer:",
-            leftLabel: "Accept the default setup",
-            rightLabel: "Verify secure handling of your biometric data",
+            text: "When using biometric login for financial apps, you prefer:",
+            leftLabel: "Accept default setup without inquiry",
+            rightLabel: "Verify secure storage of your biometric data",
             dataType: "Biometric Data",
-            apps: {
-                left: {
-                    icon: "../images/apple-pay-icon.png", // Updated path with ..
-                    name: "Apple Pay"
-                },
-                right: {
-                    icon: "../images/boa-icon.png", // Updated path with ..
-                    name: "Mobile Banking Apps"
-                }
+            example: {
+                icon: "../images/boa-icon.png", // Update with your actual icon path
+                text: "any mobile banking apps"
             }
         }
     ];
@@ -136,12 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
     appSection.style.cssText = `
         display: flex;
         justify-content: space-around;
-        align-items: end;
-        width: 40%;
-        margin: 10px auto;
+        align-items: center;
+        width: 50%;
+        margin: 20px auto;
         padding: 5px;
-        opacity: 0; // Initially hidden
-        transition: opacity 0.5s ease;
+        
     `;
 
     // Create "for example:" text
@@ -151,76 +108,68 @@ document.addEventListener('DOMContentLoaded', () => {
         font-size: 0.8em;
         color: #666;
         margin-right: 5px;
-        margin-left: 70px;
+        margin-left: 20px;
     `;
 
-    // Create left app container
-    const leftApp = document.createElement('div');
-    leftApp.style.cssText = `
+    // Create app container
+    const appContainer = document.createElement('div');
+    appContainer.style.cssText = `
         display: flex;
-        flex-direction: column;
         align-items: center;
-        text-align: center;
-        margin-right: -25px;
-        margin-left: -25px;
+        text-align: left;
     `;
 
-    // Create right app container
-    const rightApp = document.createElement('div');
-    rightApp.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    `;
-
-    // Create app icons
-    const leftIcon = document.createElement('img');
-    leftIcon.style.cssText = `
+    // Create app icon
+    const appIcon = document.createElement('img');
+    appIcon.style.cssText = `
         height: 35px;
         border-radius: 8px;
-        margin-bottom: 3px;
+        margin-right: 8px;
     `;
 
-    const rightIcon = document.createElement('img');
-    rightIcon.style.cssText = `
-        height: 35px;
-        border-radius: 8px;
-        margin-bottom: 3px;
+    // Create explanation text
+    const appExplanation = document.createElement('span');
+    appExplanation.style.cssText = `
+        font-size: 0.8em;
+        color: #666;
+        font-style: italic;
+        line-height: 1.2;
+        text-align: left;
+        width: 60%;
     `;
 
     // Assemble the elements
-    leftApp.appendChild(leftIcon);
-    rightApp.appendChild(rightIcon);
-    appSection.appendChild(exampleText); // Add "for example:" text
-    appSection.appendChild(leftApp);
-    appSection.appendChild(rightApp);
+    appContainer.appendChild(appIcon);
+    appContainer.appendChild(appExplanation);
+    appSection.appendChild(exampleText);
+    appSection.appendChild(appContainer);
 
     // Insert app section above the slider
-    const sliderContainer = document.querySelector('.slider-container'); // Assuming you have a slider container
+    const sliderContainer = document.querySelector('.slider-container');
     sliderContainer.parentNode.insertBefore(appSection, sliderContainer);
 
     // Start the journey and show the first question
     startJourneyBtn.addEventListener('click', () => {
         document.querySelector('.background').classList.add('hidden');
         questionSection.classList.remove('hidden');
-        appSection.style.opacity = '1'; // Show the app section
         showQuestion();
+        // Start applying background colors only after clicking start
+        updateBackgroundColor(0);
     });
 
     // Update the slider value display
     responseSlider.addEventListener('input', () => {
         const sliderValue = parseFloat(responseSlider.value);
-        sliderValueDisplay.textContent = sliderValue.toFixed(1);
-
-        // Adjust these values to start from the default size
-        const maxFontSize = 1.4; // Reduced from 1.4
-        const minFontSize = 0.9; // Reduced from 1.0
-
+        sliderValueDisplay.textContent = sliderValue.toFixed(1); // Display slider value
+    
+        // Dynamically adjust label font sizes
+        const maxFontSize = 1.4; // Maximum font size (in `em`)
+        const minFontSize = 0.9; // Minimum font size (in `em`)
+    
         // Calculate font size based on slider value
         const leftFontSize = maxFontSize - (sliderValue / 100) * (maxFontSize - minFontSize);
         const rightFontSize = minFontSize + (sliderValue / 100) * (maxFontSize - minFontSize);
-
+    
         // Apply font sizes to labels
         sliderLabelLeft.style.fontSize = `${leftFontSize}em`;
         sliderLabelRight.style.fontSize = `${rightFontSize}em`;
@@ -239,32 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Add this at the start of your file, outside any function
-    function updateBackgroundColor(index) {
-        // Dark base colors
-        const baseColor = {
-            r: 15, g: 25, b: 60  // Dark blue-purple (#0f193c)
-        };
-        
-        // Fluorescent accent color
-        const accentColor = {r: 0, g: 240, b: 255};  // Cyan (#00f0ff)
-        
-        // Create a futuristic gradient with glow effect
-        document.body.style.background = `
-            radial-gradient(
-                circle at 60% 40%,
-                rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, 0.15) 5%,
-                rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 1) 70%
-            ),
-            linear-gradient(
-                135deg,
-                rgb(${baseColor.r}, ${baseColor.g}, ${baseColor.b}),
-                rgb(${baseColor.r + 10}, ${baseColor.g - 5}, ${baseColor.b + 15})
-            )
-        `;
-        document.body.style.backgroundColor = 'transparent';
-    }
-
     // Function to show the current question
     function showQuestion() {
         const question = questions[currentQuestionIndex];
@@ -272,26 +195,21 @@ document.addEventListener('DOMContentLoaded', () => {
         sliderLabelLeft.textContent = question.leftLabel;
         sliderLabelRight.textContent = question.rightLabel;
 
-        // Update app icons
-        leftIcon.src = question.apps.left.icon; // Assuming you have the app data in your questions array
-        rightIcon.src = question.apps.right.icon;
-
+        // Update app icon and explanation
+        appIcon.src = question.example.icon;
+        appExplanation.textContent = question.example.text;
+        
         // Reset slider position and display
         responseSlider.value = 50;
         sliderValueDisplay.textContent = responseSlider.value;
         
         // Reset label font sizes to default
-        sliderLabelLeft.style.fontSize = '1em';
-        sliderLabelRight.style.fontSize = '1em';
+        sliderLabelLeft.style.fontSize = '1.1em';
+        sliderLabelRight.style.fontSize = '1.1em';
 
         // Update background color
         updateBackgroundColor(currentQuestionIndex);
     }
-
-    // Add this to ensure background is set on initial load
-    document.addEventListener('DOMContentLoaded', () => {
-        updateBackgroundColor(0);
-    });
 
     // Function to end the journey (replace with actual ending logic)
     function endJourney() {
@@ -316,9 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const weakestDataType = questions[lowest.question - 1].dataType;
         const strongestDataType = questions[highest.question - 1].dataType;
         
-        // Define styles with futuristic theme optimized for light background
+        // Define styles with futuristic theme (copied from personal-script.js)
         const styles = {
-            container: 'padding: 30px; border-radius: 15px;', // Removed background color
+            container: 'padding: 30px; border-radius: 15px;',
             title: 'font-size: 1.8em; color: #0f193c; margin-bottom: 15px; text-align: center; text-shadow: 0 0 3px rgba(0, 240, 255, 0.3);',
             divider: 'width: 80%; height: 2px; background: linear-gradient(to right, transparent, #00f0ff, transparent); margin: 20px auto 30px;',
             scoreContainer: 'font-size: 1.4em; color: #1e0f3c; text-align: center; margin: 25px 0; padding: 20px; background: rgba(0, 240, 255, 0.1); border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.3);',
@@ -332,11 +250,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Display the results with futuristic styles
         questionSection.innerHTML = `
             <div style="${styles.container}">
-                <h2 style="${styles.title}">Your Digital Privacy Profile</h2>
+                <h2 style="${styles.title}">Your Health Data Security Profile</h2>
                 <div style="${styles.divider}"></div>
                 
                 <div style="${styles.scoreContainer}">
-                    Your privacy score is: 
+                    Your data security score is: 
                     <span style="${styles.score}">${averageScore.toFixed(1)}</span> out of 100
                 </div>
 
@@ -351,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <p style="${styles.footer}">
-                    Check your own digital privacy profile and costumes!
+                    Check your own costume with your personal data security level!
                 </p>
             </div>
         `;
@@ -376,5 +294,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveAnswer(value) {
         responses.push({ question: currentQuestionIndex + 1, answer: value });
         console.log(`Question ${currentQuestionIndex + 1} answer: ${value}`);
+    }
+
+    // Background color update function for silver theme
+    function updateBackgroundColor(index) {
+        // Dark base colors - charcoal
+        const baseColor = {
+            r: 25, g: 35, b: 42  // Dark charcoal (#19232a)
+        };
+        
+        // Silver accent color
+        const accentColor = {r: 162, g: 169, b: 175};  // Silver (#a2a9af)
+        const highlightColor = {r: 229, g: 232, b: 232}; // Platinum (#e5e8e8)
+        
+        // Create a futuristic silver gradient with glow effect
+        document.body.style.background = `
+            radial-gradient(
+                circle at 40% 60%,
+                rgba(${highlightColor.r}, ${highlightColor.g}, ${highlightColor.b}, 0.15) 5%,
+                rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 1) 70%
+            ),
+            linear-gradient(
+                135deg,
+                rgb(${baseColor.r}, ${baseColor.g}, ${baseColor.b}),
+                rgb(${baseColor.r + 15}, ${baseColor.g + 15}, ${baseColor.b + 15})
+            )
+        `;
+        document.body.style.backgroundColor = 'transparent';
     }
 });

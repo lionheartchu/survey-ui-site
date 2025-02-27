@@ -9,29 +9,32 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(60deg, 
-        #1a0a3a,  /* Deep blue-purple */
-        #3a1c9d,  /* Royal blue-purple */
-        #5438ff,  /* Indigo blue */
-        #7b6bff,  /* Periwinkle */
-        #1a0a3a   /* Back to deep blue-purple for smooth loop */
+    background: linear-gradient(135deg, 
+        #19232a,  /* Dark charcoal */
+        #2c3e50,  /* Steel blue-gray */
+        #a2a9af,  /* Silver */
+        #e5e8e8,  /* Platinum */
+        #19232a   /* Back to dark charcoal for smooth loop */
     );
     background-size: 400% 400%;
-    animation: purpleAurora 8s ease-in-out infinite alternate;
+    animation: silverAurora 10s ease infinite;
     font-family: "Prompt", sans-serif;
     opacity: 1;
     background-blend-mode: normal;
 }
 
-@keyframes purpleAurora {
+@keyframes silverAurora {
     0% {
-        background-position: 0% 100%;
+        background-position: 0% 0%;
     }
-    33% {
-        background-position: 50% 50%;
-    }
-    66% {
+    25% {
         background-position: 100% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    75% {
+        background-position: 0% 100%;
     }
     100% {
         background-position: 0% 0%;

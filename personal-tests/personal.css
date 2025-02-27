@@ -9,15 +9,37 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url('def.png');
-    background-size: cover;
+    background: linear-gradient(-45deg, 
+        #0a1932,  /* Dark blue */
+        #1e0f3c,  /* Deep purple */
+        #0c2b4b,  /* Navy blue */
+        #00f0ff,  /* Fluorescent cyan */
+        #0a1932   /* Back to dark blue for smooth loop */
+    );
+    background-size: 300% 300%;
+    animation: aurora 8s ease infinite;
     font-family: "Prompt", sans-serif;
-    transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out;
     opacity: 1;
-    background-color: rgba(255,255,255,0.1);
-    background-blend-mode: lighten;
+    background-blend-mode: normal;
 }
 
+@keyframes aurora {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 100% 25%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 0% 75%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 body.fading {
     opacity: 0; /* Make the background fade out */
 }
@@ -30,15 +52,15 @@ h1{
 }
 
 .container {
-    width: 90%;
-    max-width: 1000px;
-    background-color: rgba(255, 255, 255, 0.7);
+    width: 75%;
+    max-width: 850px;
+    background-color: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:10px;
-    opacity: 0; /* Start invisible */
-    animation: fadeInContainer 3s ease forwards; /* Fade-in animation */
+    padding: 10px;
+    opacity: 0;
+    animation: fadeInContainer 3s ease forwards;
     animation-delay: 1s;
 }
 @keyframes fadeInContainer {
@@ -62,7 +84,7 @@ h1{
 }
 
 .narrative p {
-    font-size: 1.3em;
+    font-size: 1.1em;
     margin-bottom: 25px;
     font-style: italic;
 }
@@ -101,10 +123,16 @@ button:hover {
 }
 
 .question h2 {
-    margin-bottom: 30px;
-    font-size: 1.4em;
-    color:rgba(4,12,36);
+    margin-bottom: 10px;
+    font-size: 1.4em;  /* Increased from 1.2em */
+    color: rgba(4,12,36);
     font-style: italic;
+    text-align: left;
+    padding-left: 20px;
+    max-width: 600px;  /* Added max-width to force line breaks */
+    margin-left: auto;  /* Center the text block */
+    margin-right: auto;
+    line-height: 1.4; /* Added line height for better readability */
 }
 
 .slider-container {
@@ -130,11 +158,11 @@ input[type="range"] {
     -webkit-appearance: none; /* Remove default styling */
     width: 55%;
     height: 15px;
-    background: #e8e8e8;
+    background: rgba(255, 255, 255,0.9);
     border-radius: 5px;
     outline: none;
-    margin-left:2%;
-    margin-right:2%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 input[type="range"]::-webkit-slider-thumb {
