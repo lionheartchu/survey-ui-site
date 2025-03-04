@@ -419,43 +419,71 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Prepare data for Site B
+        // Create a detailed report for Site B
+        const surveyDetailedResults = {};
+        
+        // Organize results by data type
+        responses.forEach(response => {
+            const questionIndex = response.question - 1;
+            const dataType = questions[questionIndex].dataType;
+            const score = parseFloat(response.answer);
+            
+            // Store each score by data type
+            surveyDetailedResults[dataType] = score;
+        });
+
+        // Prepare the final survey data object
         const surveyData = {
             type: 'surveyResults',
             responses: responses.map(response => ({
-                ...response,
-                dataType: questions[response.question - 1].dataType
+                question: response.question,
+                answer: parseFloat(response.answer),
+                dataType: questions[response.question - 1].dataType,
+                stage: mapScoreToStage(parseFloat(response.answer))
             })),
             averageScore: averageScore,
             weakestDataType: weakestDataType,
-            strongestDataType: strongestDataType
+            strongestDataType: strongestDataType,
+            // Include the detailed per-datatype results
+            detailedResults: surveyDetailedResults
         };
         
-        // Send the data to Site B
+        // Log attempt
         const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
         console.log("Sending final survey results to:", costumeSiteUrl, surveyData);
         
-        // Try different methods to send the data
+        // Try all methods to ensure delivery
+        
         // 1. Direct window communication if we have a reference
         if (costumeWindow && !costumeWindow.closed) {
             try {
-                costumeWindow.postMessage(surveyData, '*');  // Use * during testing
+                costumeWindow.postMessage(surveyData, '*');
                 console.log("Survey results sent via direct window reference");
             } catch (e) {
                 console.error("Direct window send failed:", e);
             }
-        } 
-        // 2. Try parent if in iframe
-        else if (window.parent && window.parent !== window) {
+        }
+        
+        // 2. Try parent if in iframe (as backup)
+        if (window.parent && window.parent !== window) {
             try {
-                window.parent.postMessage(surveyData, '*');  // Use * during testing
+                window.parent.postMessage(surveyData, '*');
                 console.log("Survey results sent via parent frame");
             } catch (e) {
                 console.error("Parent frame send failed:", e);
             }
         }
-        // 3. Open a new window as last resort
-        else {
+        
+        // 3. Try broadcast (as backup)
+        try {
+            window.postMessage(surveyData, '*');
+            console.log("Survey results broadcast to all windows");
+        } catch (e) {
+            console.error("Broadcast failed:", e);
+        }
+        
+        // 4. Open a new window as last resort
+        if (!costumeWindow || costumeWindow.closed) {
             console.log("No existing communication channel, opening new window");
             const params = new URLSearchParams();
             params.append('surveyData', JSON.stringify(surveyData));
