@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the next question on button click
     nextQuestionBtn.addEventListener('click', () => {
-        saveAnswer(responseSlider.value); // Function to save the answer if needed
+        saveAnswer(responseSlider.value); // Save answer and calculate garment stage
         currentQuestionIndex++;
 
         if (currentQuestionIndex < questions.length) {
@@ -211,9 +211,37 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBackgroundColor(currentQuestionIndex);
     }
 
-    // Function to end the journey (replace with actual ending logic)
+    // Function to save answers with garment stage calculation
+    let responses = [];
+    function saveAnswer(value) {
+        // Calculate garment stage based on slider value
+        const stageValue = parseFloat(value);
+        let stage;
+        
+        if (stageValue <= 25) {
+            stage = 1;
+        } else if (stageValue <= 50) {
+            stage = 2;
+        } else if (stageValue <= 75) {
+            stage = 3;
+        } else {
+            stage = 4;
+        }
+        
+        // Save response with corresponding stage
+        responses.push({ 
+            question: currentQuestionIndex + 1, 
+            answer: value,
+            dataType: questions[currentQuestionIndex].dataType,
+            stage: stage
+        });
+        
+        console.log(`Question ${currentQuestionIndex + 1} answer: ${value}, Stage: ${stage}`);
+    }
+
+    // Function to end the journey and send data to Site B
     function endJourney() {
-        // Calculate the average score
+        // Calculate average score
         const totalScore = responses.reduce((sum, response) => sum + parseFloat(response.answer), 0);
         const averageScore = totalScore / questions.length;
 
@@ -221,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let lowest = responses[0];
         let highest = responses[0];
 
-        responses.forEach((response, index) => {
+        responses.forEach(response => {
             if (parseFloat(response.answer) < parseFloat(lowest.answer)) {
                 lowest = response;
             }
@@ -231,10 +259,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Get data types for lowest and highest
-        const weakestDataType = questions[lowest.question - 1].dataType;
-        const strongestDataType = questions[highest.question - 1].dataType;
+        const weakestDataType = lowest.dataType;
+        const strongestDataType = highest.dataType;
         
-        // Define styles with futuristic theme (copied from personal-script.js)
+        // Prepare data for Site B
+        const dataForSiteB = {
+            averageScore: averageScore.toFixed(1),
+            weakestDataType: weakestDataType,
+            strongestDataType: strongestDataType,
+            garmentData: responses // Contains all responses with stages already calculated
+        };
+        
+        // Send data to Site B
+        console.log("Sending data to Site B:", dataForSiteB);
+        
+        // Actual API call to Site B
+        fetch('https://site-b-endpoint.com/receive-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Add authentication headers if needed
+                // 'Authorization': 'Bearer YOUR_TOKEN'
+            },
+            body: JSON.stringify(dataForSiteB)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // Redirect to Site B's display page with a query parameter or session token
+            window.location.href = `https://site-b-endpoint.com/display?session=${data.sessionId}`;
+        })
+        .catch(error => {
+            console.error('Error sending data to Site B:', error);
+            // Show error message to user
+            alert('An error occurred while processing your results. Please try again.');
+        });
+        
+        // Display results on current page while waiting for redirect
+        displayResults(averageScore, weakestDataType, strongestDataType);
+    }
+
+    // Display results function
+    function displayResults(averageScore, weakestDataType, strongestDataType) {
+        // Define styles with futuristic theme
         const styles = {
             container: 'padding: 30px; border-radius: 15px;',
             title: 'font-size: 1.8em; color: #0f193c; margin-bottom: 15px; text-align: center; text-shadow: 0 0 3px rgba(0, 240, 255, 0.3);',
@@ -269,31 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <p style="${styles.footer}">
-                    Check your own costume with your personal data security level!
+                    Your results have been used to create a personalized garment based on your security profile.
                 </p>
             </div>
         `;
-
-        // Optional: Send responses as JSON to Site A
-        fetch('https://your-site-a.com/receive-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ responses: responses }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Data sent to Site A:', data);
-        })
-        .catch(error => {
-            console.error('Error sending data:', error);
-        });
-    }
-
-    // Placeholder function for saving answers (for later use)
-    let responses = [];
-    function saveAnswer(value) {
-        responses.push({ question: currentQuestionIndex + 1, answer: value });
-        console.log(`Question ${currentQuestionIndex + 1} answer: ${value}`);
     }
 
     // Background color update function with bluish-purple theme

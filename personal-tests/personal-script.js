@@ -229,7 +229,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the next question on button click
     nextQuestionBtn.addEventListener('click', () => {
-        saveAnswer(responseSlider.value); // Function to save the answer if needed
+        saveAnswer(responseSlider.value); // Save the current answer
+        
+        // Send message to Site B that this question was completed
+        const score = parseFloat(responseSlider.value);
+        const questionData = {
+            type: 'questionCompleted',
+            questionIndex: currentQuestionIndex,
+            score: score,
+            dataType: questions[currentQuestionIndex].dataType
+        };
+        
+        // Try to send message to Site B
+        try {
+            // First try to use postMessage if in an iframe or has opener
+            const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
+            
+            // Try window.parent (if in iframe)
+            try {
+                window.parent.postMessage(questionData, costumeSiteUrl);
+                console.log('Question completion sent to parent window:', questionData);
+            } catch (e) {
+                console.log('Not in iframe, trying direct message');
+                // If we have a reference to the costume window, use that
+                if (costumeWindow && !costumeWindow.closed) {
+                    costumeWindow.postMessage(questionData, costumeSiteUrl);
+                    console.log('Question completion sent to costume window:', questionData);
+                }
+            }
+        } catch (err) {
+            console.warn('Could not send question completion message:', err);
+        }
+        
+        // Move to next question
         currentQuestionIndex++;
 
         if (currentQuestionIndex < questions.length) {
@@ -293,7 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBackgroundColor(0);
     });
 
-    // Function to end the journey (replace with actual ending logic)
+    // Global variable to store reference to costume window if opened
+    let costumeWindow = null;
+
+    // Function to end the journey
     function endJourney() {
         // Calculate the average score
         const totalScore = responses.reduce((sum, response) => sum + parseFloat(response.answer), 0);
@@ -303,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let lowest = responses[0];
         let highest = responses[0];
 
-        responses.forEach((response, index) => {
+        responses.forEach((response) => {
             if (parseFloat(response.answer) < parseFloat(lowest.answer)) {
                 lowest = response;
             }
@@ -356,25 +391,64 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Optional: Send responses as JSON to Site A
-        fetch('https://your-site-a.com/receive-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ responses: responses }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Data sent to Site A:', data);
-        })
-        .catch(error => {
-            console.error('Error sending data:', error);
-        });
+        // Prepare data for Site B
+        const surveyData = {
+            type: 'surveyResults',
+            responses: responses.map(response => ({
+                ...response,
+                dataType: questions[response.question - 1].dataType
+            })),
+            averageScore: averageScore,
+            weakestDataType: weakestDataType,
+            strongestDataType: strongestDataType
+        };
+        
+        // Send the data to Site B
+        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
+        
+        // Try different methods to send the data
+        try {
+            // First try to use postMessage if in an iframe
+            window.parent.postMessage(surveyData, costumeSiteUrl);
+            console.log('Survey results sent to parent window:', surveyData);
+        } catch (e) {
+            console.log('Not in iframe, trying to open new window');
+            // If that fails, open a new window with the results
+            costumeWindow = window.open(costumeSiteUrl, '_blank');
+            
+            // Wait for the new window to load before sending the message
+            setTimeout(() => {
+                try {
+                    costumeWindow.postMessage(surveyData, costumeSiteUrl);
+                    console.log('Survey results sent to new window:', surveyData);
+                } catch (err) {
+                    console.error('Error sending data to costume site:', err);
+                    // As a fallback, redirect with data in URL parameters
+                    const queryParams = new URLSearchParams();
+                    queryParams.append('data', JSON.stringify(surveyData));
+                    window.location.href = `${costumeSiteUrl}?${queryParams.toString()}`;
+                }
+            }, 1000);
+        }
     }
 
-    // Placeholder function for saving answers (for later use)
+    // Function to save answers
     let responses = [];
     function saveAnswer(value) {
-        responses.push({ question: currentQuestionIndex + 1, answer: value });
+        responses.push({ 
+            question: currentQuestionIndex + 1, 
+            answer: value,
+            // Add stage calculation here
+            stage: mapScoreToStage(parseFloat(value))
+        });
         console.log(`Question ${currentQuestionIndex + 1} answer: ${value}`);
+    }
+
+    // Helper function to map scores to stages (1-4)
+    function mapScoreToStage(score) {
+        if (score <= 25) return 1;        // Warning state (0-25)
+        else if (score <= 50) return 2;   // Caution state (26-50)
+        else if (score <= 75) return 3;   // Secure state (51-75)
+        else return 4;                    // Optimal state (76-100)
     }
 });
