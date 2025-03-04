@@ -254,8 +254,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Direct window send failed:", e);
             }
         } 
-        // 2. Try parent if in iframe
-        else if (window.parent && window.parent !== window) {
+        
+        // 2. Open a new window if we don't have one yet
+        if (!costumeWindow || costumeWindow.closed) {
+            console.log("Opening new costume window");
+            costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
+            
+            // Wait for the window to load before sending
+            setTimeout(() => {
+                try {
+                    costumeWindow.postMessage(questionData, '*');
+                    console.log("Sent via newly opened window");
+                } catch (e) {
+                    console.error("New window send failed:", e);
+                }
+            }, 1500);
+        }
+        
+        // 3. Try parent if in iframe
+        if (window.parent && window.parent !== window) {
             try {
                 window.parent.postMessage(questionData, '*');  // Use * during testing
                 console.log("Sent via parent frame");
@@ -263,15 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Parent frame send failed:", e);
             }
         }
-        // 3. If all else fails, open a new window with URL params
-        else {
-            console.log("No existing communication channel found, trying broadcast");
-            // Try a broadcast message first
-            try {
-                window.postMessage(questionData, '*');
-            } catch (e) {
-                console.error("Broadcast failed:", e);
-            }
+        
+        // 4. Try broadcast as last resort
+        try {
+            window.postMessage(questionData, '*');
+            console.log("Broadcast message sent");
+        } catch (e) {
+            console.error("Broadcast failed:", e);
         }
         
         // Move to next question
@@ -470,12 +485,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open the costume site in a new window at the beginning to establish communication
     document.addEventListener('DOMContentLoaded', function() {
-        // Optional: Pre-open the costume site to establish a window reference
-        // Uncomment if you want to open the window immediately on page load
-        /*
+        // Pre-open the costume site to establish a window reference
         const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-        costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
-        console.log("Pre-opened costume site window");
-        */
+        console.log("Pre-opening costume site window");
+        
+        // Use a button to open the window (to avoid popup blockers)
+        const openWindowBtn = document.createElement('button');
+        openWindowBtn.textContent = 'Connect To Costume Display';
+        openWindowBtn.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 240, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(0, 255, 240, 0.8);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        `;
+        
+        openWindowBtn.onclick = function() {
+            costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
+            console.log("Costume site window opened");
+            this.textContent = 'Connected';
+            this.disabled = true;
+            this.style.opacity = '0.5';
+        };
+        
+        document.body.appendChild(openWindowBtn);
     });
 });
