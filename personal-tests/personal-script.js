@@ -240,25 +240,38 @@ document.addEventListener('DOMContentLoaded', () => {
             dataType: questions[currentQuestionIndex].dataType
         };
         
-        // Try to send message to Site B
-        try {
-            // First try to use postMessage if in an iframe or has opener
-            const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-            
-            // Try window.parent (if in iframe)
+        // Log attempt
+        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
+        console.log("Attempting to send data to:", costumeSiteUrl, questionData);
+        
+        // Try different methods for sending
+        // 1. Direct window communication if we have a reference
+        if (costumeWindow && !costumeWindow.closed) {
             try {
-                window.parent.postMessage(questionData, costumeSiteUrl);
-                console.log('Question completion sent to parent window:', questionData);
+                costumeWindow.postMessage(questionData, '*');  // Use * during testing
+                console.log("Sent via direct window reference");
             } catch (e) {
-                console.log('Not in iframe, trying direct message');
-                // If we have a reference to the costume window, use that
-                if (costumeWindow && !costumeWindow.closed) {
-                    costumeWindow.postMessage(questionData, costumeSiteUrl);
-                    console.log('Question completion sent to costume window:', questionData);
-                }
+                console.error("Direct window send failed:", e);
             }
-        } catch (err) {
-            console.warn('Could not send question completion message:', err);
+        } 
+        // 2. Try parent if in iframe
+        else if (window.parent && window.parent !== window) {
+            try {
+                window.parent.postMessage(questionData, '*');  // Use * during testing
+                console.log("Sent via parent frame");
+            } catch (e) {
+                console.error("Parent frame send failed:", e);
+            }
+        }
+        // 3. If all else fails, open a new window with URL params
+        else {
+            console.log("No existing communication channel found, trying broadcast");
+            // Try a broadcast message first
+            try {
+                window.postMessage(questionData, '*');
+            } catch (e) {
+                console.error("Broadcast failed:", e);
+            }
         }
         
         // Move to next question
@@ -405,30 +418,33 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Send the data to Site B
         const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
+        console.log("Sending final survey results to:", costumeSiteUrl, surveyData);
         
         // Try different methods to send the data
-        try {
-            // First try to use postMessage if in an iframe
-            window.parent.postMessage(surveyData, costumeSiteUrl);
-            console.log('Survey results sent to parent window:', surveyData);
-        } catch (e) {
-            console.log('Not in iframe, trying to open new window');
-            // If that fails, open a new window with the results
-            costumeWindow = window.open(costumeSiteUrl, '_blank');
-            
-            // Wait for the new window to load before sending the message
-            setTimeout(() => {
-                try {
-                    costumeWindow.postMessage(surveyData, costumeSiteUrl);
-                    console.log('Survey results sent to new window:', surveyData);
-                } catch (err) {
-                    console.error('Error sending data to costume site:', err);
-                    // As a fallback, redirect with data in URL parameters
-                    const queryParams = new URLSearchParams();
-                    queryParams.append('data', JSON.stringify(surveyData));
-                    window.location.href = `${costumeSiteUrl}?${queryParams.toString()}`;
-                }
-            }, 1000);
+        // 1. Direct window communication if we have a reference
+        if (costumeWindow && !costumeWindow.closed) {
+            try {
+                costumeWindow.postMessage(surveyData, '*');  // Use * during testing
+                console.log("Survey results sent via direct window reference");
+            } catch (e) {
+                console.error("Direct window send failed:", e);
+            }
+        } 
+        // 2. Try parent if in iframe
+        else if (window.parent && window.parent !== window) {
+            try {
+                window.parent.postMessage(surveyData, '*');  // Use * during testing
+                console.log("Survey results sent via parent frame");
+            } catch (e) {
+                console.error("Parent frame send failed:", e);
+            }
+        }
+        // 3. Open a new window as last resort
+        else {
+            console.log("No existing communication channel, opening new window");
+            const params = new URLSearchParams();
+            params.append('surveyData', JSON.stringify(surveyData));
+            costumeWindow = window.open(`${costumeSiteUrl}?${params.toString()}`, '_blank');
         }
     }
 
@@ -441,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add stage calculation here
             stage: mapScoreToStage(parseFloat(value))
         });
-        console.log(`Question ${currentQuestionIndex + 1} answer: ${value}`);
+        console.log(`Question ${currentQuestionIndex + 1} answer: ${value}, stage: ${mapScoreToStage(parseFloat(value))}`);
     }
 
     // Helper function to map scores to stages (1-4)
@@ -451,4 +467,15 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (score <= 75) return 3;   // Secure state (51-75)
         else return 4;                    // Optimal state (76-100)
     }
+
+    // Open the costume site in a new window at the beginning to establish communication
+    document.addEventListener('DOMContentLoaded', function() {
+        // Optional: Pre-open the costume site to establish a window reference
+        // Uncomment if you want to open the window immediately on page load
+        /*
+        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
+        costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
+        console.log("Pre-opened costume site window");
+        */
+    });
 });
