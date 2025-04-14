@@ -6,26 +6,21 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface sample rev</title>
+    <title>Welcome page</title>
 </head>
 <body>
-    <div class="section" id="homepage">
-        <h1>Project-Name-Test-2</h1>
-        <div>
-        <p>Hello! This is a revised test for the interface of my project.</p>
-        <p>I want to see if the workflow make sense. Please feel free to test:)</p>
-    </div>
-        <!-- <img src="intro-image.png" alt="Project Image Intro" style="width:20%; height:auto;"> -->
-        <div onclick="showConcept()" style="margin:5% 5% 2% 5%;font-size:20px;">Click to start!</div>
-    </div>
-
-    <div class="section hidden" id="concept">
-        <h1>Concept</h1>
-        
-        <p class="concept-intro" style="width:75%;">[Random-project-name-haha] visualizes the vulnerability of personal data by representing it through human organs. 
-            Each part of the body corresponds to a type of data, such as geolocation, communication, audio, and visual data.</p>
-        <button class="btn" onclick="window.location.href='choice.html'">Start</button>
-    </div>
+    <div class="wake-overlay">
+        <div class="wake-text">…Booting consciousness…</div>
+      </div>
+    
+      <div class="dialogue-box">
+        <div class="npc-avatar"></div>
+        <div class="dialogue-content">
+          <div class="npc-name">Dr. A</div>
+          <div class="npc-text" id="dialogueText"></div>
+          <button id="nextBtn">Next</button>
+        </div>
+      </div>
 
     <script src="script.js"></script>
 </body>

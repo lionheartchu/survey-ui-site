@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Orbitron&family=Caudex&family=Audiowide&family= &family=Yrsa&family=Glory&family=Marcellus&family=Titillium+Web&family=Handjet&family=Prompt:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Anatomy Overview</title>
+    <link rel="stylesheet" href="overview.css">
+</head>
+<div id="intro" style="position:absolute;color:white;margin-top:-49%;text-align: left;font-size:28px;">Choose the one you care the most:</div>
+<body>
+
+    <div class="overview-container">
+      <div id="glow-field"></div>
+        <h1 class="overview-title hidden">About "Digital Anatomy"</h1>
+        <div class="overview-subtitle hidden" style="color:ghostwhite;">
+            <p class="typing-text">Data Skin is used to protect our data, like human skin.</p>
+            <p class="typing-text" style="margin-top: -1%;">Each part of your body holds a different kind of data. Here's how they're mapped:</p>
+        </div>
+    
+    <div class="overview-grid hidden">
+        <div class="left info-panel">
+          <div class="info-item" data-key="eyes">Eyes – Visual Data<br><span class="info-desc">Photos, camera access</span></div>
+          <div class="info-item" data-key="heart">Heart – Personal Info<br><span class="info-desc">Name, contact, profile</span></div>
+          <div class="info-item" data-key="skin">Skin – Biometric<br><span class="info-desc">Face, fingerprint</span></div>
+        </div>
+      
+        <div class="body-map">
+          <img src="body-outline.png" alt="Human Body Outline" class="body-img body-image-avoid">
+          <div class="dot brain" data-key="brain"></div>
+          <div class="dot eyes" data-key="eyes"></div>
+          <div class="dot ears" data-key="ears"></div>
+          <div class="dot heart" data-key="heart"></div>
+          <div class="dot feet" data-key="feet"></div>
+          <div class="dot hands" data-key="hands"></div>
+          <div class="dot skin" data-key="skin"></div>
+        </div>
+      
+        <div class="right info-panel">
+          <div class="info-item" data-key="brain">Brain – Cognitive Data<br><span class="info-desc">Preferences, habits</span></div>
+          <div class="info-item" data-key="ears">Ears – Audio Data<br><span class="info-desc">Voice recordings</span></div>
+          <div class="info-item" data-key="hands">Hands – Communication<br><span class="info-desc">Messages, chat logs</span></div>
+          <div class="info-item" data-key="feet">Feet – Location<br><span class="info-desc">Where you've been</span></div>
+        </div>
+
+        <button class="scan-btn" onclick="location.href='personal-tests/personal-test.html'">Begin Scan</button>
+  </div>
+  
+  <script>
+const glowField = document.getElementById("glow-field");
+const GLOW_COUNT = 8;
+const existingPositions = [];
+const bodyImage = document.querySelector('.body-image-avoid');
+const bodyRect = bodyImage.getBoundingClientRect();
+
+function distance(x1, y1, x2, y2) {
+  const dx = x1 - x2;
+  const dy = y1 - y2;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+for (let i = 0; i < GLOW_COUNT; i++) {
+  let attempts = 0;
+  let top, left;
+  let tooClose = false;
+
+  do {
+    tooClose = false;
+    top = Math.random() * 90;
+    left = Math.random() * 90;
+    attempts++;
+
+    // 暂时生成一个虚拟 DOM 空间来判断位置
+    const container = glowField.getBoundingClientRect();
+    const xPx = container.left + (left / 100) * container.width;
+    const yPx = container.top + (top / 100) * container.height;
+
+    // 如果粒子中心点落在人体 image 区域里，就重新生成
+    if (
+      xPx > bodyRect.left &&
+      xPx < bodyRect.right &&
+      yPx > bodyRect.top &&
+      yPx < bodyRect.bottom
+    ) {
+      tooClose = true;
+      continue;
+    }
+
+    for (const pos of existingPositions) {
+      if (distance(left, top, pos.left, pos.top) < 35) {
+        tooClose = true;
+        break;
+      }
+    }
+  } while (tooClose && attempts < 30);
+
+  existingPositions.push({ top, left });
+
+  const glow = document.createElement("div");
+  glow.classList.add("pulse-glow");
+  glow.style.top = `${top}%`;
+  glow.style.left = `${left}%`;
+
+  const size = 100 + Math.random() * 100;
+  glow.style.width = glow.style.height = `${size}px`;
+  glow.style.animationDuration = `${35 + Math.random() * 15}s`;
+  glow.style.animationDelay = `${Math.random() * 10}s`;
+
+  glowField.appendChild(glow);
+}
+
+const dots = document.querySelectorAll('.dot');
+  const panels = document.querySelectorAll('.info-item');
+
+  dots.forEach(dot => {
+    dot.addEventListener('mouseenter', () => {
+      const key = dot.getAttribute('data-key');
+      panels.forEach(panel => {
+        if (panel.getAttribute('data-key') === key) {
+          panel.classList.add('highlighted');
+        }
+      });
+    });
+
+    dot.addEventListener('mouseleave', () => {
+      panels.forEach(panel => {
+        panel.classList.remove('highlighted');
+      });
+    });
+  });
+
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initially hide all elements
+  const title = document.querySelector('.overview-title');
+  const subtitle = document.querySelector('.overview-subtitle');
+  const grid = document.querySelector('.overview-grid');
+  const typingTexts = document.querySelectorAll('.typing-text');
+  
+  // Function to wait
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  
+  // Animation sequence
+  async function startAnimationSequence() {
+    // Show title first
+    title.classList.remove('hidden');
+    title.classList.add('fade-in');
+    
+    // Wait 1 second
+    await wait(1000);
+    
+    // Show subtitle container but keep typing text hidden
+    subtitle.classList.remove('hidden');
+    subtitle.classList.add('fade-in');
+    
+    // Process typing effects one at a time
+    for (let i = 0; i < typingTexts.length; i++) {
+      const text = typingTexts[i];
+      
+      // Show current paragraph
+      text.classList.add('visible');
+      
+      // Apply typing effect
+      text.classList.add('typing-effect');
+      
+      // Wait for typing animation to complete
+      await wait(3000);
+    }
+    
+    // Finally show the grid
+    await wait(500);
+    grid.classList.remove('hidden');
+    grid.classList.add('fade-in');
+  }
+  
+  // Start the animation sequence
+  startAnimationSequence();
+});
+  </script>
+  
+</body>
+</html>

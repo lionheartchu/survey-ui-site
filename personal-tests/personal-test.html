@@ -6,6 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Information Test</title>
     <link rel="stylesheet" href="personal.css">
+    
+    <!-- Latest Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYAyOdx3Ja0Z0wMptzm2Mab72QpeORLLI",
+            authDomain: "dataskin-install.firebaseapp.com",
+            databaseURL: "https://dataskin-install-default-rtdb.firebaseio.com",
+            projectId: "dataskin-install",
+            storageBucket: "dataskin-install.firebasestorage.app",
+            messagingSenderId: "58568018284",
+            appId: "1:58568018284:web:2a0df076745a8deb18cb49",
+            measurementId: "G-FJBX6ZJGZL"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Make Firebase functions available globally
+        window.firebaseDb = {
+            database,
+            ref,
+            push,
+            set,
+            onValue
+        };
+    </script>
+    
+    <!-- Your script file -->
     <script defer src="personal-script.js"></script>
 </head>
 <body>
@@ -13,8 +47,8 @@
         <!-- Background Image and Narrative Section -->
         <div class="background">
             <div class="narrative">
-                <h1>Scenario: Personal Information</h1>
-                <p style="text-align: left;">This section focuses on the ways you share and protect your personal details. Your choices here will reveal your balance between convenience and privacy in everyday digital interactions.</p>
+                <h1>Scenario: Personal Information</h1><p>Your answers will generate a unique protective layer—your *Data Skin*—mapped across your digital body.
+                    Tap below to begin.</p>
                 <button id="startJourney">Start</button>
             </div>
         </div>

@@ -1,125 +1,157 @@
+// Instead, wait for the Firebase initialization to complete
 document.addEventListener('DOMContentLoaded', () => {
+    // Get Firebase functions from window.firebaseDb
+    const { database, ref, push, set, onValue } = window.firebaseDb;
+
+    // Generate a session ID based on timestamp and random string
+    function generateSessionId() {
+        const timestamp = new Date().getTime();
+        const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+        return `${timestamp}-${randomStr}`;
+    }
+
+    // Store the session ID globally
+    const sessionId = generateSessionId();
+    console.log("Session ID:", sessionId);
+
+    // Function to save data to Firebase
+    function saveToFirebase(questionData) {
+        const sessionsRef = ref(database, `sessions/${sessionId}/questions`);
+        
+        return push(sessionsRef, {
+            questionIndex: questionData.questionIndex,
+            score: questionData.score,
+            dataType: questionData.dataType,
+            timestamp: Date.now()
+        }).then(() => {
+            console.log('Data saved successfully to Firebase');
+        }).catch((error) => {
+            console.error('Error saving to Firebase:', error);
+        });
+    }
+
     const startJourneyBtn = document.getElementById('startJourney');
     const questionSection = document.getElementById('questionSection');
     const questionText = document.getElementById('questionText');
     const responseSlider = document.getElementById('responseSlider');
     const sliderValueDisplay = document.getElementById('sliderValue');
     const nextQuestionBtn = document.getElementById('nextQuestion');
+    const narrativeSection = document.querySelector('.narrative');
     
     // Slider labels
     const sliderLabelLeft = document.getElementById('sliderLabelLeft');
     const sliderLabelRight = document.getElementById('sliderLabelRight');
 
-    // Questions array with labels for each question
+    // Questions array with updated text and labels
     const questions = [
         {
-            text: "When posting personal photos on social media, you prefer:",
-            leftLabel: "Use default open-to-all settings",
-            rightLabel: "Customize privacy controls",
+            text: "When saving or sharing personal images through apps, you usually…",
+            leftLabel: "Keep them as-is without adjusting settings",
+            rightLabel: "Add privacy controls like folders or app restrictions",
             dataType: "Visual Data",
             apps: {
                 left: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
+                    icon: "../images/instagram-icon.png",
                     name: "Instagram"
                 },
                 right: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
+                    icon: "../images/facebook-icon.png",
                     name: "Facebook"
                 }
             }
         },
         {
-            text: "When sending personal messages on Apps, you prefer:",
-            leftLabel: "Keep auto-save and default chat history",
-            rightLabel: "Use apps with self-destruct options",
+            text: "When sending messages with sensitive info, you usually…",
+            leftLabel: "Send normally without extra steps",
+            rightLabel: "Use basic protection like disappearing messages or app locks",
             dataType: "Communication Data",
             apps: {
                 left: {
-                    icon: "../images/whatsapp-icon.png", // Updated path with ..
+                    icon: "../images/whatsapp-icon.png",
                     name: "WhatsApp"
                 },
                 right: {
-                    icon: "../images/imessage-icon.svg", // Updated path with ..
+                    icon: "../images/imessage-icon.svg",
                     name: "iMessage"
                 }
             }
         },
         {
-            text: "When creating personal profiles on social platforms, you prefer:",
-            leftLabel: "Share all the info by default",
-            rightLabel: "Manage what's visible selectively",
+            text: "When creating accounts or filling out profiles, you usually…",
+            leftLabel: "Fill everything and leave defaults",
+            rightLabel: "Choose what to share and what to hide",
             dataType: "Personal Data",
             apps: {
                 left: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
+                    icon: "../images/facebook-icon.png",
                     name: "Facebook"
                 },
                 right: {
-                    icon: "../images/linkedin-icon.png", // Updated path with ..
+                    icon: "../images/linkedin-icon.png",
                     name: "LinkedIn"
                 }
             }
         },
         {
-            text: "When apps analyze your data to suggest interests, you prefer:",
-            leftLabel: "Allow full tracking for convenience",
-            rightLabel: "Limit data collection for privacy",
+            text: "When apps track your activity to give suggestions, you…",
+            leftLabel: "Allow tracking for convenience",
+            rightLabel: "Limit what's collected in settings",
             dataType: "Cognitive Data",
             apps: {
                 left: {
-                    icon: "../images/facebook-icon.png", // Updated path with ..
+                    icon: "../images/facebook-icon.png",
                     name: "Facebook"
                 },
                 right: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
+                    icon: "../images/instagram-icon.png",
                     name: "Instagram"
                 }
             }
         },
         {
-            text: "When using voice assistants, you prefer:",
-            leftLabel: "Keep default recording settings",
-            rightLabel: "Opt for enhanced privacy controls",
+            text: "When using voice features or assistants, you usually…",
+            leftLabel: "Leave audio access on by default",
+            rightLabel: "Review or restrict what gets recorded",
             dataType: "Audio Data",
             apps: {
                 left: {
-                    icon: "../images/siri-icon.png", // Updated path with ..
+                    icon: "../images/siri-icon.png",
                     name: "Siri"
                 },
                 right: {
-                    icon: "../images/google-assistant-icon.png", // Updated path with ..
+                    icon: "../images/google-assistant-icon.png",
                     name: "Google Assistant"
                 }
             }
         },
         {
-            text: "When using apps that track your locations for social features, you prefer:",
-            leftLabel: "Enable continuous location sharing",
-            rightLabel: "Share location only when needed",
+            text: "When an app asks to access your location, you usually…",
+            leftLabel: "Allow all the time",
+            rightLabel: "Allow only when needed",
             dataType: "Geolocation Data",
             apps: {
                 left: {
-                    icon: "../images/google-maps-icon.png", // Updated path with ..
+                    icon: "../images/google-maps-icon.png",
                     name: "Google Maps"
                 },
                 right: {
-                    icon: "../images/instagram-icon.png", // Updated path with ..
+                    icon: "../images/instagram-icon.png",
                     name: "Instagram"
                 }
             }
         },
         {
-            text: "When using biometric login to access personal accounts, you prefer:",
-            leftLabel: "Accept the default setup",
-            rightLabel: "Verify secure handling of your biometric data",
+            text: "When using your fingerprint or face to log in, you usually…",
+            leftLabel: "Just turn it on without checking anything",
+            rightLabel: "Make sure it's stored and used securely",
             dataType: "Biometric Data",
             apps: {
                 left: {
-                    icon: "../images/apple-pay-icon.png", // Updated path with ..
+                    icon: "../images/apple-pay-icon.png",
                     name: "Apple Pay"
                 },
                 right: {
-                    icon: "../images/boa-icon.png", // Updated path with ..
+                    icon: "../images/boa-icon.png",
                     name: "Mobile Banking Apps"
                 }
             }
@@ -200,6 +232,165 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderContainer = document.querySelector('.slider-container'); // Assuming you have a slider container
     sliderContainer.parentNode.insertBefore(appSection, sliderContainer);
 
+    // Create scanner intro elements
+    const scannerIntro = document.createElement('div');
+    scannerIntro.className = 'scanner-intro';
+    scannerIntro.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(10, 25, 50, 0.9);
+        color: rgb(0, 240, 255);
+        z-index: 100;
+        font-family: "Orbitron", sans-serif;
+        padding: 20px;
+    `;
+    
+    // Create typing text element
+    const typingText = document.createElement('div');
+    typingText.className = 'typing-text';
+    typingText.style.cssText = `
+        font-size: 1.5em;
+        margin-bottom: 30px;
+        min-height: 1.5em;
+        text-align: center;
+    `;
+    
+    // Create loading bar container
+    const loadingBarContainer = document.createElement('div');
+    loadingBarContainer.style.cssText = `
+        width: 80%;
+        max-width: 400px;
+        height: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 40px;
+        border: 2px solid rgba(0, 240, 255, 0.4);
+    `;
+    
+    // Create loading bar
+    const loadingBar = document.createElement('div');
+    loadingBar.style.cssText = `
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(0, 240, 255, 0.7), rgba(115, 255, 254, 0.9));
+        border-radius: 8px;
+        transition: width 0.1s ease;
+    `;
+    loadingBarContainer.appendChild(loadingBar);
+    
+    // Create tap to begin button
+    const tapToBeginBtn = document.createElement('button');
+    tapToBeginBtn.textContent = '[ Tap to Begin ]';
+    tapToBeginBtn.style.cssText = `
+        background: transparent;
+        color: rgb(115, 255, 254);
+        border: 2px solid rgb(115, 255, 254);
+        padding: 10px 25px;
+        font-size: 1.2em;
+        border-radius: 5px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.3s ease;
+        font-family: "Orbitron", sans-serif;
+        transform: scale(0.9);
+        display: none;
+    `;
+    
+    tapToBeginBtn.onmouseover = () => {
+        tapToBeginBtn.style.transform = 'scale(1.05)';
+        tapToBeginBtn.style.backgroundColor = 'rgba(0, 240, 255, 0.1)';
+    };
+    
+    tapToBeginBtn.onmouseout = () => {
+        tapToBeginBtn.style.transform = 'scale(1)';
+        tapToBeginBtn.style.backgroundColor = 'transparent';
+    };
+    
+    // Assemble scanner intro
+    scannerIntro.appendChild(typingText);
+    scannerIntro.appendChild(loadingBarContainer);
+    scannerIntro.appendChild(tapToBeginBtn);
+    
+    // Hide the narrative section initially
+    narrativeSection.style.display = 'none';
+    
+    // Add scanner intro to the document
+    document.querySelector('.container').appendChild(scannerIntro);
+    
+    // Type animation function
+    function typeText(text, element, callback, speed = 40) {
+        let i = 0;
+        element.textContent = '';
+        
+        const typing = setInterval(() => {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+            } else {
+                clearInterval(typing);
+                if (callback) callback();
+            }
+        }, speed);
+    }
+    
+    // Loading bar animation function
+    function animateLoadingBar(duration, callback) {
+        let progress = 0;
+        const interval = 20; // Update interval in ms
+        const increment = interval / duration * 100;
+        
+        const loading = setInterval(() => {
+            progress += increment;
+            loadingBar.style.width = `${Math.min(progress, 100)}%`;
+            
+            if (progress >= 100) {
+                clearInterval(loading);
+                if (callback) callback();
+            }
+        }, interval);
+    }
+    
+    // Start the animations when page loads
+    setTimeout(() => {
+        typeText("Getting ready to scan your Digital Self...", typingText, () => {
+            setTimeout(() => {
+                animateLoadingBar(2000, () => {
+                    tapToBeginBtn.style.display = 'block';
+                    setTimeout(() => {
+                        tapToBeginBtn.style.opacity = '1';
+                    }, 200);
+                });
+            }, 500);
+        });
+    }, 500);
+    
+    // Handle tap to begin
+    tapToBeginBtn.addEventListener('click', () => {
+        scannerIntro.style.opacity = '0';
+        scannerIntro.style.transition = 'opacity 0.7s ease';
+        
+        setTimeout(() => {
+            scannerIntro.style.display = 'none';
+            narrativeSection.style.display = 'block';
+            
+            // Fade in the narrative
+            narrativeSection.style.opacity = '0';
+            narrativeSection.style.transition = 'opacity 0.7s ease';
+            
+            setTimeout(() => {
+                narrativeSection.style.opacity = '1';
+            }, 100);
+        }, 700);
+    });
+
     // Start the journey and show the first question
     startJourneyBtn.addEventListener('click', () => {
         document.querySelector('.background').classList.add('hidden');
@@ -229,69 +420,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the next question on button click
     nextQuestionBtn.addEventListener('click', () => {
-        saveAnswer(responseSlider.value); // Save the current answer
+        saveAnswer(responseSlider.value);
         
-        // Send message to Site B that this question was completed
         const score = parseFloat(responseSlider.value);
         const questionData = {
             type: 'questionCompleted',
             questionIndex: currentQuestionIndex,
             score: score,
-            dataType: questions[currentQuestionIndex].dataType
+            dataType: questions[currentQuestionIndex].dataType,
+            sessionId: sessionId
         };
         
-        // Log attempt
+        // Save to Firebase
+        saveToFirebase(questionData);
+        
+        // Your existing window communication code
         const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-        console.log("Attempting to send data to:", costumeSiteUrl, questionData);
+        const costumeUrlWithSession = `${costumeSiteUrl}?session=${sessionId}`;
         
-        // Try different methods for sending
-        // 1. Direct window communication if we have a reference
-        if (costumeWindow && !costumeWindow.closed) {
-            try {
-                costumeWindow.postMessage(questionData, '*');  // Use * during testing
-                console.log("Sent via direct window reference");
-            } catch (e) {
-                console.error("Direct window send failed:", e);
-            }
-        } 
-        
-        // 2. Open a new window if we don't have one yet
         if (!costumeWindow || costumeWindow.closed) {
-            console.log("Opening new costume window");
-            costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
+            console.log("Opening new costume window with session:", sessionId);
+            costumeWindow = window.open(costumeUrlWithSession, 'costumeDisplay');
             
-            // Wait for the window to load before sending
             setTimeout(() => {
                 try {
-                    costumeWindow.postMessage(questionData, '*');
+                    costumeWindow.postMessage({
+                        ...questionData,
+                        sessionId: sessionId
+                    }, '*');
                     console.log("Sent via newly opened window");
                 } catch (e) {
                     console.error("New window send failed:", e);
                 }
             }, 1500);
-        }
-        
-        // 3. Try parent if in iframe
-        if (window.parent && window.parent !== window) {
+        } else {
             try {
-                window.parent.postMessage(questionData, '*');  // Use * during testing
-                console.log("Sent via parent frame");
+                costumeWindow.postMessage({
+                    ...questionData,
+                    sessionId: sessionId
+                }, '*');
+                console.log("Sent via existing window");
             } catch (e) {
-                console.error("Parent frame send failed:", e);
+                console.error("Existing window send failed:", e);
             }
         }
         
-        // 4. Try broadcast as last resort
-        try {
-            window.postMessage(questionData, '*');
-            console.log("Broadcast message sent");
-        } catch (e) {
-            console.error("Broadcast failed:", e);
-        }
-        
-        // Move to next question
         currentQuestionIndex++;
-
         if (currentQuestionIndex < questions.length) {
             showQuestion();
         } else {
@@ -358,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to end the journey
     function endJourney() {
+        const { database, ref, set } = window.firebaseDb;
+        
         // Calculate the average score
         const totalScore = responses.reduce((sum, response) => sum + parseFloat(response.answer), 0);
         const averageScore = totalScore / questions.length;
@@ -432,63 +608,26 @@ document.addEventListener('DOMContentLoaded', () => {
             surveyDetailedResults[dataType] = score;
         });
 
-        // Prepare the final survey data object
-        const surveyData = {
-            type: 'surveyResults',
-            responses: responses.map(response => ({
-                question: response.question,
-                answer: parseFloat(response.answer),
-                dataType: questions[response.question - 1].dataType,
-                stage: mapScoreToStage(parseFloat(response.answer))
-            })),
+        // Save final results to Firebase
+        const finalResultsRef = ref(database, `sessions/${sessionId}/finalResults`);
+        const finalResults = {
+            sessionId: sessionId,
+            timestamp: Date.now(),
             averageScore: averageScore,
             weakestDataType: weakestDataType,
             strongestDataType: strongestDataType,
-            // Include the detailed per-datatype results
             detailedResults: surveyDetailedResults
         };
-        
-        // Log attempt
-        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-        console.log("Sending final survey results to:", costumeSiteUrl, surveyData);
-        
-        // Try all methods to ensure delivery
-        
-        // 1. Direct window communication if we have a reference
-        if (costumeWindow && !costumeWindow.closed) {
-            try {
-                costumeWindow.postMessage(surveyData, '*');
-                console.log("Survey results sent via direct window reference");
-            } catch (e) {
-                console.error("Direct window send failed:", e);
-            }
-        }
-        
-        // 2. Try parent if in iframe (as backup)
-        if (window.parent && window.parent !== window) {
-            try {
-                window.parent.postMessage(surveyData, '*');
-                console.log("Survey results sent via parent frame");
-            } catch (e) {
-                console.error("Parent frame send failed:", e);
-            }
-        }
-        
-        // 3. Try broadcast (as backup)
-        try {
-            window.postMessage(surveyData, '*');
-            console.log("Survey results broadcast to all windows");
-        } catch (e) {
-            console.error("Broadcast failed:", e);
-        }
-        
-        // 4. Open a new window as last resort
-        if (!costumeWindow || costumeWindow.closed) {
-            console.log("No existing communication channel, opening new window");
-            const params = new URLSearchParams();
-            params.append('surveyData', JSON.stringify(surveyData));
-            costumeWindow = window.open(`${costumeSiteUrl}?${params.toString()}`, '_blank');
-        }
+
+        set(finalResultsRef, finalResults)
+            .then(() => {
+                console.log('Final results saved to Firebase');
+            })
+            .catch((error) => {
+                console.error('Error saving final results:', error);
+            });
+
+        // Your existing window communication code...
     }
 
     // Function to save answers
