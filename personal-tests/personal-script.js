@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sessionId = generateSessionId();
     console.log("Session ID:", sessionId);
 
+    // Immediately store a timestamp at the session root
+    const sessionRootRef = ref(database, `sessions/${sessionId}`);
+    set(sessionRootRef, {
+        timestamp: Date.now()
+    });
+    
     // Function to save data to Firebase
     function saveToFirebase(questionData) {
         const sessionsRef = ref(database, `sessions/${sessionId}/questions`);
