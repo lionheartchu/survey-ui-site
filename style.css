@@ -74,7 +74,7 @@ body {
     font-size: 1.8em;
     color: #0ff;
     opacity: 0.8;
-    animation: blink 1s infinite alternate;
+    animation: blink 1.2s infinite alternate;
   }
   
   @keyframes fadeOut {
@@ -167,6 +167,69 @@ body {
   
   button:hover {
     background: #009fa2;
+  }
+  
+  /* Add these styles for the Initialize button */
+  .initialize-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    z-index: 20;
+  }
+  
+  .initialize-btn {
+    position: relative;
+    padding: 15px 40px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4em;
+    letter-spacing: 2px;
+    background: rgba(0, 20, 40, 0.9);
+    color: #00f9ff;
+    border: 1px solid #00f9ff;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 249, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .initialize-btn:hover {
+    background: rgba(0, 30, 60, 0.9);
+    box-shadow: 0 0 30px rgba(0, 249, 255, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  .initialize-btn:active {
+    transform: translateY(1px);
+  }
+  
+  .btn-text {
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 8px rgba(0, 249, 255, 0.8);
+  }
+  
+  .btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 249, 255, 0.2), transparent);
+    animation: btn-glow 3s infinite;
+  }
+  
+  @keyframes btn-glow {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
   }
   
   

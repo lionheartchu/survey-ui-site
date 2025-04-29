@@ -9,7 +9,14 @@
     <title>Welcome page</title>
 </head>
 <body>
-    <div class="wake-overlay">
+    <div class="initialize-container">
+      <button id="initializeBtn" class="initialize-btn">
+        <span class="btn-text">INITIALIZE SYSTEM</span>
+        <span class="btn-glow"></span>
+      </button>
+    </div>
+
+    <div class="wake-overlay" style="display: none;">
         <div class="wake-text">…Booting consciousness…</div>
       </div>
     
@@ -18,7 +25,7 @@
         <div class="dialogue-content">
           <div class="npc-name">Dr. A</div>
           <div class="npc-text" id="dialogueText"></div>
-          <button id="nextBtn" style="margin-top: 24px;">Next</button>
+          <button id="nextBtn" style="margin-top: 24px;font-size: 1.2em;padding: 12px 24px;">Next</button>
         </div>
       </div>
 

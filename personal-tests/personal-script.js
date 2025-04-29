@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize and play background music
     if (!bgm) {
-        bgm = new Audio('/sound/bgm2.mp3');
+        bgm = new Audio('../sound/bgm2.mp3');
         bgm.loop = true;
         bgm.volume = 0.3; // Set to a comfortable volume
         bgm.play().catch(err => console.log("Error playing BGM:", err));
@@ -434,10 +434,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Handle tap to begin (startJourney) button
     tapToBeginBtn.addEventListener('click', () => {
+        // Start BGM only after user interaction (solves autoplay restrictions)
+        if (!bgm || bgm.paused) {
+            bgm = new Audio('../sound/bgm2.mp3');
+            bgm.loop = true;
+            bgm.volume = 0.2;
+            bgm.play()
+                .then(() => console.log("BGM started successfully"))
+                .catch(err => console.error("Error playing BGM:", err));
+        }
+        
         // Play start sound at normal volume
-        const startAudio = new Audio('/sound/start.mp3');
+        const startAudio = new Audio('../sound/start.mp3');
         startAudio.volume = 1.0;
-        startAudio.play();
+        startAudio.play().catch(err => console.error("Error playing start sound:", err));
 
         // Add a 0.5s pulse effect before showing questions
         tapToBeginBtn.style.transform = 'scale(1.12)';
@@ -477,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the next question on button click
     nextQuestionBtn.addEventListener('click', () => {
-        const revealAudio = new Audio('/sound/reveal.mp3');
+        const revealAudio = new Audio('../sound/reveal.mp3');
         revealAudio.volume = 0.3;
         revealAudio.play();
 
@@ -703,9 +713,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const restartBtn = document.getElementById('restartBtn');
         if (restartBtn) {
             restartBtn.addEventListener('click', () => {
-                // Play sound effect
-                const audio = new Audio('/sound/restart.mp3');
-                audio.play();
+                // Play sound effect at lower volume
+                const audio = new Audio('../sound/restart.mp3');
+                audio.volume = 0.3; // Lower volume from default 1.0 to 0.3
+                audio.play().catch(err => console.error("Error playing restart sound:", err));
 
                 // Stop the BGM
                 if (bgm) {
@@ -713,10 +724,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     bgm.currentTime = 0;
                 }
 
-                // Add a 2 second delay before redirecting
+                // Use relative path to fix navigation error
                 setTimeout(() => {
-                    window.location.href = '/index.html';
-                }, 3000);
+                    window.location.href = '../index.html';
+                }, 2000);
             });
         }
     }

@@ -53,16 +53,27 @@ let bgm;
 document.addEventListener('DOMContentLoaded', async function() {
     // Check if BGM should be playing from previous page
     const shouldPlayBGM = sessionStorage.getItem('bgmPlaying') === 'true';
+    const bgmPosition = parseFloat(sessionStorage.getItem('bgmPosition') || '0');
     
-    if (shouldPlayBGM && !window.bgm) {
-        window.bgm = new Audio('sound/bgm1.mp3');
-        window.bgm.loop = true;
-        window.bgm.volume = 0.6;
-        try {
-            await window.bgm.play();
-        } catch (err) {
-            console.log("Error playing BGM:", err);
-        }
+    if (shouldPlayBGM) {
+        bgm = new Audio('sound/bgm1.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.5;
+        
+        // Set the current time to resume from the previous position
+        bgm.addEventListener('loadedmetadata', function() {
+            bgm.currentTime = bgmPosition;
+            bgm.play().catch(err => {
+                console.log("Auto-play prevented, adding click handler");
+                
+                // One-time click handler to start BGM
+                const playBGM = function() {
+                    bgm.play();
+                    document.removeEventListener('click', playBGM);
+                };
+                document.addEventListener('click', playBGM);
+            });
+        });
     }
 
     // Modified typing effect for overview page
@@ -119,10 +130,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Update the scan button click handler
     document.querySelector('.scan-btn').addEventListener('click', () => {
-        if (window.bgm) {
-            window.bgm.pause();
-            window.bgm.currentTime = 0;
+        if (bgm) {
+            bgm.pause();
+            bgm.currentTime = 0;
             sessionStorage.removeItem('bgmPlaying');
+            sessionStorage.removeItem('bgmPosition');
         }
     });
 });
@@ -276,9 +288,9 @@ dots.forEach(dot => {
                     
                     // Play a special reveal sound
                     const revealSound = new Audio('sound/ping.mp3');
-                    revealSound.volume = 0.5;
+                    revealSound.volume = 0.4;
                     revealSound.play();
-                }, 2000); // Wait 1 second before revealing all
+                }, 1000);
             } else {
                 // Not the last dot, continue with sequence
                 currentDotIndex++;
