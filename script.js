@@ -46,7 +46,23 @@ const dialogues = [
         
         // Wait for boot animation to complete before showing dialogue
         setTimeout(() => {
-          document.querySelector('.dialogue-box').style.display = 'flex';
+          // COMPLETELY REMOVE the wake overlay instead of just hiding it
+          wakeOverlay.style.display = 'none';
+          wakeOverlay.style.pointerEvents = 'none'; // Disable any pointer events
+          wakeOverlay.style.zIndex = '-1'; // Move it below other elements
+          
+          // Make dialogue box fully interactive
+          const dialogueBox = document.querySelector('.dialogue-box');
+          dialogueBox.style.display = 'flex';
+          dialogueBox.style.zIndex = '20'; // Higher z-index than wake-overlay
+          dialogueBox.style.pointerEvents = 'auto'; // Ensure pointer events work
+          
+          // Ensure the next button is clickable
+          const nextBtn = document.getElementById('nextBtn');
+          nextBtn.style.zIndex = '25';
+          nextBtn.style.position = 'relative';
+          nextBtn.style.pointerEvents = 'auto';
+          
           // Delay before typing starts
           setTimeout(() => {
             typeWriter(dialogues[index], textEl);
