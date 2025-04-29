@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!bgm) {
         bgm = new Audio('../sound/bgm2.mp3');
         bgm.loop = true;
-        bgm.volume = 0.3; // Set to a comfortable volume
+        bgm.volume = 0.2; // Set to a comfortable volume
         bgm.play().catch(err => console.log("Error playing BGM:", err));
     }
 
@@ -298,20 +298,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const scannerIntro = document.createElement('div');
     scannerIntro.className = 'scanner-intro';
     scannerIntro.style.cssText = `
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: rgba(10, 25, 50, 0.9);
+        background: rgba(10, 25, 50, 0.95);
         color: rgb(0, 240, 255);
-        z-index: 100;
+        z-index: 1000;
         font-family: "Orbitron", sans-serif;
         padding: 20px;
+        overflow: hidden;
+        box-sizing: border-box;
     `;
     
     // Create typing text element
@@ -322,6 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
         margin-bottom: 30px;
         min-height: 1.5em;
         text-align: center;
+        max-width: 90%;
+        position: relative;
+        z-index: 1010;
     `;
     
     // Create loading bar container
@@ -715,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
             restartBtn.addEventListener('click', () => {
                 // Play sound effect at lower volume
                 const audio = new Audio('../sound/restart.mp3');
-                audio.volume = 0.3; // Lower volume from default 1.0 to 0.3
+                audio.volume = 0.45;
                 audio.play().catch(err => console.error("Error playing restart sound:", err));
 
                 // Stop the BGM
