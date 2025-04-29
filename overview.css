@@ -76,8 +76,7 @@ body {
 }
 
 .dot:hover::after {
-  opacity: 1;
-  transform: translateX(-50%) scaleY(1);
+  /* Remove this rule completely */
 }
 
 .dot:hover {
@@ -335,4 +334,74 @@ body {
 .dot.active {
   transform: translate(-50%, -50%) scale(1.2);
   box-shadow: 0 0 12px rgba(0, 249, 255, 0.8), 0 0 20px rgba(0, 249, 255, 0.4);
+}
+
+/* Fix the transform property in the active-line class */
+.dot.active-line::after {
+  opacity: 1;
+  transform: translateX(-50%) scaleY(1) rotate(0deg); /* Remove the rotation override */
+}
+
+/* Fix the active class as well */
+.dot.active::after {
+  opacity: 1;
+  transform: translateX(-50%) scaleY(1);
+}
+
+/* Individual dot after transforms - keep these below the active-line class */
+.dot.brain.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(-71deg);
+}
+
+.dot.eyes.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(64deg);
+}
+
+.dot.ears.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(-50deg);
+}
+
+.dot.heart.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(60deg);
+}
+
+.dot.skin.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(50deg);
+}
+
+.dot.hands.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(-50deg);
+}
+
+.dot.feet.active-line::after {
+  transform: translateX(-50%) scaleY(1) rotate(-133.5deg);
+}
+
+/* Do the same for the final reveal */
+.dot.brain.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(-71deg);
+}
+
+.dot.eyes.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(64deg);
+}
+
+.dot.ears.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(-50deg);
+}
+
+.dot.heart.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(60deg);
+}
+
+.dot.skin.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(50deg);
+}
+
+.dot.hands.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(-50deg);
+}
+
+.dot.feet.active::after {
+  transform: translateX(-50%) scaleY(1) rotate(-133.5deg);
 }

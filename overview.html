@@ -237,6 +237,14 @@ dots.forEach(dot => {
         
         // Only proceed if this is the current dot in sequence
         if (key === dotSequence[currentDotIndex]) {
+            // Remove active-line class from all dots first
+            dots.forEach(d => {
+                d.classList.remove('active-line');
+            });
+            
+            // Add active-line class to the clicked dot
+            dot.classList.add('active-line');
+            
             // Hide currently shown panel if it exists
             if (currentlyShownPanel) {
                 currentlyShownPanel.style.opacity = '0';
@@ -264,7 +272,12 @@ dots.forEach(dot => {
             if (key === 'feet') {
                 // Reveal all panels with staggered animation
                 setTimeout(() => {
-                    // Make all dots active
+                    // Remove all active-line classes first
+                    dots.forEach(d => {
+                        d.classList.remove('active-line');  // Remove any existing line
+                    });
+                    
+                    // Make all dots active but WITHOUT showing their lines
                     dots.forEach(d => {
                         d.style.cssText = `
                             background: #00f9ff;
@@ -272,6 +285,7 @@ dots.forEach(dot => {
                             transition: all 2s ease;
                         `;
                         d.style.setProperty('--pulse-color', 'rgba(0, 249, 255, 0.3)');
+                        // Don't add the active-line class here
                     });
                     
                     // Show all panels with staggered animation
@@ -283,7 +297,7 @@ dots.forEach(dot => {
                                 transform: translateY(0);
                                 transition: all 2s cubic-bezier(0.25, 0.1, 0.25, 1.0);
                             `;
-                        }, index * 200); // Stagger the animations by 200ms
+                        }, index * 200);
                     });
                     
                     // Play a special reveal sound
@@ -324,8 +338,6 @@ dots.forEach(dot => {
             }
         }
     });
-
-    // Keep the hover and mouseleave handlers as they are
 });
   </script>
   
