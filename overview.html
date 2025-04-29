@@ -47,6 +47,86 @@
   </div>
   
   <script>
+// Global BGM variable
+let bgm;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check if BGM should be playing from previous page
+    const shouldPlayBGM = sessionStorage.getItem('bgmPlaying') === 'true';
+    
+    if (shouldPlayBGM && !window.bgm) {
+        window.bgm = new Audio('sound/bgm1.mp3');
+        window.bgm.loop = true;
+        window.bgm.volume = 0.6;
+        try {
+            await window.bgm.play();
+        } catch (err) {
+            console.log("Error playing BGM:", err);
+        }
+    }
+
+    // Modified typing effect for overview page
+    async function typeText(element, text) {
+        const originalText = text;  // Store the original text
+        element.textContent = '';   // Clear the element
+        
+        // Play typing sound once for the whole sentence
+        const typingSound = new Audio('sound/typing.mp3');
+        typingSound.volume = 0.4;
+        typingSound.play();
+        
+        // Type each character
+        for (let i = 0; i < originalText.length; i++) {
+            element.textContent += originalText.charAt(i);  // Add each character
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        // Stop sound when sentence is complete
+        typingSound.pause();
+        typingSound.currentTime = 0;
+    }
+
+    const title = document.querySelector('.overview-title');
+    const subtitle = document.querySelector('.overview-subtitle');
+    const grid = document.querySelector('.overview-grid');
+    const typingTexts = document.querySelectorAll('.typing-text');
+    
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    
+    async function startAnimationSequence() {
+        title.classList.remove('hidden');
+        title.classList.add('fade-in');
+        
+        await wait(1000);
+        
+        subtitle.classList.remove('hidden');
+        subtitle.classList.add('fade-in');
+        
+        for (let i = 0; i < typingTexts.length; i++) {
+            const text = typingTexts[i];
+            const originalText = text.textContent;  // Store original text before clearing
+            text.classList.add('visible');
+            await typeText(text, originalText);     // Pass the original text
+            await wait(800);
+        }
+        
+        await wait(500);
+        grid.classList.remove('hidden');
+        grid.classList.add('fade-in');
+    }
+    
+    startAnimationSequence();
+
+    // Update the scan button click handler
+    document.querySelector('.scan-btn').addEventListener('click', () => {
+        if (window.bgm) {
+            window.bgm.pause();
+            window.bgm.currentTime = 0;
+            sessionStorage.removeItem('bgmPlaying');
+        }
+    });
+});
+
 const glowField = document.getElementById("glow-field");
 const GLOW_COUNT = 8;
 const existingPositions = [];
@@ -110,70 +190,130 @@ for (let i = 0; i < GLOW_COUNT; i++) {
 }
 
 const dots = document.querySelectorAll('.dot');
-  const panels = document.querySelectorAll('.info-item');
+const panels = document.querySelectorAll('.info-item');
+const dotSequence = ['brain', 'eyes', 'ears', 'heart', 'skin', 'hands', 'feet'];
+let currentDotIndex = 0;
 
-  dots.forEach(dot => {
-    dot.addEventListener('mouseenter', () => {
-      const key = dot.getAttribute('data-key');
-      panels.forEach(panel => {
-        if (panel.getAttribute('data-key') === key) {
-          panel.classList.add('highlighted');
-        }
-      });
-    });
+// Initially hide all info panels and make all dots grey except the first one
+panels.forEach(panel => {
+    panel.style.cssText = `
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px);
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    `;
+});
 
-    dot.addEventListener('mouseleave', () => {
-      panels.forEach(panel => {
-        panel.classList.remove('highlighted');
-      });
-    });
-  });
-
-document.addEventListener('DOMContentLoaded', async function() {
-  // Initially hide all elements
-  const title = document.querySelector('.overview-title');
-  const subtitle = document.querySelector('.overview-subtitle');
-  const grid = document.querySelector('.overview-grid');
-  const typingTexts = document.querySelectorAll('.typing-text');
-  
-  // Function to wait
-  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-  
-  // Animation sequence
-  async function startAnimationSequence() {
-    // Show title first
-    title.classList.remove('hidden');
-    title.classList.add('fade-in');
-    
-    // Wait 1 second
-    await wait(1000);
-    
-    // Show subtitle container but keep typing text hidden
-    subtitle.classList.remove('hidden');
-    subtitle.classList.add('fade-in');
-    
-    // Process typing effects one at a time
-    for (let i = 0; i < typingTexts.length; i++) {
-      const text = typingTexts[i];
-      
-      // Show current paragraph
-      text.classList.add('visible');
-      
-      // Apply typing effect
-      text.classList.add('typing-effect');
-      
-      // Wait for typing animation to complete
-      await wait(3000);
+// Style for inactive dots
+dots.forEach(dot => {
+    if (dot.getAttribute('data-key') !== dotSequence[0]) {
+        dot.style.cssText = `
+            background: #808080;
+            opacity: 0.7;
+        `;
+        // Change the before pseudo-element color for inactive dots
+        dot.style.setProperty('--pulse-color', 'rgba(255, 255, 255, 0.2)');
     }
-    
-    // Finally show the grid
-    await wait(500);
-    grid.classList.remove('hidden');
-    grid.classList.add('fade-in');
-  }
-  
-  // Start the animation sequence
-  startAnimationSequence();
+});
+
+let currentlyShownPanel = null;
+
+// Update the dots click event handler
+dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+        const key = dot.getAttribute('data-key');
+        
+        // Only proceed if this is the current dot in sequence
+        if (key === dotSequence[currentDotIndex]) {
+            // Hide currently shown panel if it exists
+            if (currentlyShownPanel) {
+                currentlyShownPanel.style.opacity = '0';
+                currentlyShownPanel.style.visibility = 'hidden';
+                currentlyShownPanel.style.transform = 'translateY(20px)';
+                currentlyShownPanel = null;
+            }
+
+            // Show the clicked panel
+            panels.forEach(panel => {
+                if (panel.getAttribute('data-key') === key) {
+                    panel.style.opacity = '1';
+                    panel.style.visibility = 'visible';
+                    panel.style.transform = 'translateY(0)';
+                    currentlyShownPanel = panel;
+                }
+            });
+
+            // Play ping sound
+            const clickSound = new Audio('sound/ping.mp3');
+            clickSound.volume = 0.3;
+            clickSound.play();
+
+            // Check if this was the last dot (feet)
+            if (key === 'feet') {
+                // Reveal all panels with staggered animation
+                setTimeout(() => {
+                    // Make all dots active
+                    dots.forEach(d => {
+                        d.style.cssText = `
+                            background: #00f9ff;
+                            opacity: 1;
+                            transition: all 2s ease;
+                        `;
+                        d.style.setProperty('--pulse-color', 'rgba(0, 249, 255, 0.3)');
+                    });
+                    
+                    // Show all panels with staggered animation
+                    panels.forEach((panel, index) => {
+                        setTimeout(() => {
+                            panel.style.cssText = `
+                                opacity: 1;
+                                visibility: visible;
+                                transform: translateY(0);
+                                transition: all 2s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+                            `;
+                        }, index * 200); // Stagger the animations by 200ms
+                    });
+                    
+                    // Play a special reveal sound
+                    const revealSound = new Audio('sound/ping.mp3');
+                    revealSound.volume = 0.5;
+                    revealSound.play();
+                }, 2000); // Wait 1 second before revealing all
+            } else {
+                // Not the last dot, continue with sequence
+                currentDotIndex++;
+
+                // Update dot colors
+                dots.forEach(d => {
+                    const dotKey = d.getAttribute('data-key');
+                    if (dotKey === dotSequence[currentDotIndex]) {
+                        // Next active dot
+                        d.style.cssText = `
+                            background: #00f9ff;
+                            opacity: 1;
+                        `;
+                        d.style.setProperty('--pulse-color', 'rgba(0, 249, 255, 0.2)');
+                    } else if (currentDotIndex > dotSequence.indexOf(dotKey)) {
+                        // Previously clicked dots - just lower opacity
+                        d.style.cssText = `
+                            background: #00f9ff;
+                            opacity: 0.5;
+                        `;
+                        d.style.setProperty('--pulse-color', 'rgba(0, 249, 255, 0.2)');
+                    } else if (currentDotIndex < dotSequence.indexOf(dotKey)) {
+                        // Not yet active dots - grey with white pulse
+                        d.style.cssText = `
+                            background: #808080;
+                            opacity: 0.7;
+                        `;
+                        d.style.setProperty('--pulse-color', 'rgba(255, 255, 255, 0.2)');
+                    }
+                });
+            }
+        }
+    });
+
+    // Keep the hover and mouseleave handlers as they are
 });
   </script>
   

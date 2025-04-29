@@ -67,11 +67,11 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 10;
-    animation: fadeOut 3s ease forwards;
+    animation: fadeOut 4s ease forwards;
   }
   
   .wake-text {
-    font-size: 1.5em;
+    font-size: 1.8em;
     color: #0ff;
     opacity: 0.8;
     animation: blink 1s infinite alternate;
@@ -79,7 +79,7 @@ body {
   
   @keyframes fadeOut {
     0% { opacity: 1; }
-    90% { opacity: 1; }
+    70% { opacity: 1; }
     100% { opacity: 0; display: none; }
   }
   
@@ -113,22 +113,24 @@ body {
     border: 1px solid #00f0ff;
     width: 92%;
     max-width: 900px;
-    padding: 28px 36px;
+    padding: 34px 42px;
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
     box-shadow: 0 0 40px rgba(0, 255, 255, 0.25);
     border-radius: 16px;
     z-index: 2;
+    height: 20vh;
   }
   
   .npc-avatar {
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
     background: url('npc-avatar.png') no-repeat center/cover;
     border-radius: 50%;
     flex-shrink: 0;
     border: 2px solid #00f0ff;
+    margin-right: 20px;
   }
   
   .dialogue-content {
@@ -138,20 +140,22 @@ body {
   .npc-name {
     font-weight: bold;
     color: #06e0ff;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 1.4em;
   }
   
   .npc-text {
     font-family: 'Prompt', sans-serif;
-    font-size: 1.1em;
-    line-height: 1.6em;
-    margin-bottom: 18px;
+    font-size: 1.3em;
+    line-height: 1.7em;
+    margin-bottom: 22px;
     white-space: pre-line;
+    color:ghostwhite;
   }
   
   button {
-    padding: 6px 14px;
-    font-size: 0.9em;
+    padding: 8px 18px;
+    font-size: 1.1em;
     background: #00c0c3;
     color: #001c1c;
     border: none;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Orbitron&family=Caudex&family=Audiowide&family= &family=Yrsa&family=Glory&family=Marcellus&family=Titillium+Web&family=Handjet&family=Prompt:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Information Test</title>
+    <title>Digital Security Test</title>
     <link rel="stylesheet" href="personal.css">
     
     <!-- Latest Firebase SDKs -->
@@ -42,18 +42,11 @@
     <!-- Your script file -->
     <script defer src="personal-script.js"></script>
 </head>
-<body>
+<body>  
+    <canvas id="particleCanvas"></canvas>
     <div class="container">
-        <!-- Background Image and Narrative Section -->
-        <div class="background">
-            <div class="narrative">
-                <h1>Scenario: Personal Information</h1><p>Your answers will generate a unique protective layer—your *Data Skin*—mapped across your digital body.
-                    Tap below to begin.</p>
-                <button id="startJourney">Start</button>
-            </div>
-        </div>
-
         <!-- Questions Section, initially hidden until Start Journey is clicked -->
+    <div class="particle-panel">
     <div class="question-section hidden" id="questionSection">
         <div class="question">
             <h2 id="questionText">Question will appear here</h2>
@@ -66,6 +59,6 @@
             <button id="nextQuestion">Next</button>
         </div>
     </div>
-    
+    </div>
 </body>
 </html>

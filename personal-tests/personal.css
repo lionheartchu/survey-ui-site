@@ -3,25 +3,34 @@
     padding: 0;
     box-sizing: border-box;
 }
-
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(-45deg, 
-        #0a1932,  /* Dark blue */
-        #1e0f3c,  /* Deep purple */
-        #0c2b4b,  /* Navy blue */
-        #00f0ff,  /* Fluorescent cyan */
-        #0a1932   /* Back to dark blue for smooth loop */
-    );
-    background-size: 300% 300%;
-    animation: aurora 8s ease infinite;
+  
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.1), transparent 60%),
+      radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.07), transparent 60%),
+      linear-gradient(130deg, #0a1932, #1e0f3c, #0c2b4b);
+    background-size: 200% 200%;
+    animation: geomotion 8s ease-in-out infinite;
+  
     font-family: "Prompt", sans-serif;
+    background-blend-mode: screen;
     opacity: 1;
-    background-blend-mode: normal;
-}
+  }
+  @keyframes geomotion {
+    0% {
+      background-position: 30% 30%, 70% 70%, 0% 0%;
+    }
+    50% {
+      background-position: 60% 40%, 40% 60%, 100% 100%;
+    }
+    100% {
+      background-position: 30% 30%, 70% 70%, 0% 0%;
+    }
+  }
 
 @keyframes aurora {
     0% {
@@ -53,11 +62,9 @@ h1{
 
 .container {
     width: 75%;
-    max-width: 850px;
-    background-color: rgba(255, 255, 255, 0.6);
+    max-width: 875px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
     opacity: 0;
     animation: fadeInContainer 3s ease forwards;
@@ -116,16 +123,17 @@ button:hover {
     padding: 20px;
     text-align: center;
     border-radius: 10px;
-    margin-top: 24px;
+    margin-top: 15px;
     margin-bottom:5px;
     min-height: 150px; /* Minimum height for dynamic adjustment */
     transition: min-height 0.3s ease-in-out;
 }
 
 .question h2 {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     font-size: 1.4em;  /* Increased from 1.2em */
-    color: rgba(4,12,36);
+    /* color: rgba(4,12,36); */
+    color:ghostwhite;
     font-style: italic;
     text-align: left;
     padding-left: 20px;
@@ -145,42 +153,125 @@ button:hover {
 
 .slider-label {
     font-size: 1em;
-    color: rgba(10,32,90);
+    color: rgb(115,255,254);
     font-weight: bold;
 }
 
-/* input[type="range"] {
-    width: 70%;
-    cursor: pointer;
-} */
-
 input[type="range"] {
-    -webkit-appearance: none; /* Remove default styling */
-    width: 55%;
-    height: 15px;
-    background: rgba(255, 255, 255,0.9);
-    border-radius: 5px;
+    -webkit-appearance: none;
+    width: 60%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.6); /* More transparent track */
+    border-radius: 4px; /* Smaller border radius */
     outline: none;
     margin-left: 5%;
     margin-right: 5%;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 6px rgba(0, 240, 255, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.7);
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 35px;
-    height: 35px;
-    background: rgb(115,255,254);
-    border-radius: 50%;
+    width: 28px; /* Larger thumb */
+    height: 28px; /* Larger thumb */
+    background: rgba(0, 240, 255, 0.7); /* More opaque for visibility */
+    border: 1px solid rgba(0, 240, 255, 0.9);
+    border-radius: 4px;
+    transform: rotate(45deg);
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    transition: all 0.3s ease;
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 35px;
-    height: 35px;
-    background: rgb(115,255,254);
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 240, 255, 0.7);
+    border: 1px solid rgba(0, 240, 255, 0.9);
+    border-radius: 4px;
+    transform: rotate(45deg);
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    transition: all 0.3s ease;
 }
+
+/* Smaller box shadow for hover effect */
+input[type="range"]:hover::-webkit-slider-thumb {
+    background: rgba(0, 240, 255, 0.9);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); /* Smaller shadow */
+    border-color: rgba(0, 240, 255, 1);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+    background: rgba(0, 240, 255, 0.9);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); /* Smaller shadow */
+    border-color: rgba(0, 240, 255, 1);
+}
+
+/* Update active state with smaller box shadow */
+input[type="range"]:active::-webkit-slider-thumb {
+    background: rgba(0, 240, 255, 0.9);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.7); /* Reduced from 20px/30px to 12px */
+}
+
+input[type="range"]:active::-moz-range-thumb {
+    background: rgba(0, 240, 255, 0.9);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.7); /* Reduced from 20px/30px to 12px */
+}
+
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.particle-panel {
+    position: relative;
+    z-index: 1;
+    margin: 80px auto;
+    padding: 30px;
+    background: rgba(12, 24, 50, 0.4);
+    border-radius: 10px; /* Smaller border radius */
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 240, 255, 0.2); /* fallback */
+  }
+  .particle-panel::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 12px; /* Smaller border radius for glow effect */
+    z-index: -1;
+    background: linear-gradient(120deg, #00f0ff, #0066ff, #00f0ff);
+    background-size: 300% 300%;
+    animation: borderGlow 6s linear infinite;
+    pointer-events: none;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    padding: 2px;
+    box-sizing: border-box;
+  }
+  @keyframes borderGlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 300% 50%;
+    }
+  }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }

@@ -1,4 +1,10 @@
-// Instead, wait for the Firebase initialization to complete
+// Add global costumeWindow variable declaration
+let costumeWindow = null;
+
+// Add global BGM variable at the top of the file (line 1)
+let bgm;
+
+// Move canvas code inside DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     // Get Firebase functions from window.firebaseDb
     const { database, ref, push, set, onValue } = window.firebaseDb;
@@ -13,6 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store the session ID globally
     const sessionId = generateSessionId();
     console.log("Session ID:", sessionId);
+
+    // Initialize and play background music
+    if (!bgm) {
+        bgm = new Audio('/sound/bgm2.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.3; // Set to a comfortable volume
+        bgm.play().catch(err => console.log("Error playing BGM:", err));
+    }
 
     // Immediately store a timestamp at the session root
     const sessionRootRef = ref(database, `sessions/${sessionId}`);
@@ -58,11 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
             apps: {
                 left: {
                     icon: "../images/instagram-icon.png",
-                    name: "Instagram"
+                    name: "Instagram",
+                    example: "posting on Instagram"
                 },
                 right: {
-                    icon: "../images/facebook-icon.png",
-                    name: "Facebook"
+                    icon: "../images/photo-icon.svg",
+                    name: "Photos",
+                    example: "saving in secure folders"
                 }
             }
         },
@@ -74,11 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
             apps: {
                 left: {
                     icon: "../images/whatsapp-icon.png",
-                    name: "WhatsApp"
+                    name: "WhatsApp",
+                    example: "texting private details"
                 },
                 right: {
                     icon: "../images/imessage-icon.svg",
-                    name: "iMessage"
+                    name: "iMessage",
+                    example: "using disappearing messages"
                 }
             }
         },
@@ -90,11 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
             apps: {
                 left: {
                     icon: "../images/facebook-icon.png",
-                    name: "Facebook"
+                    name: "Facebook",
+                    example: "signing up"
                 },
                 right: {
                     icon: "../images/linkedin-icon.png",
-                    name: "LinkedIn"
+                    name: "LinkedIn",
+                    example: "customizing privacy settings"
                 }
             }
         },
@@ -105,12 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
             dataType: "Cognitive Data",
             apps: {
                 left: {
-                    icon: "../images/facebook-icon.png",
-                    name: "Facebook"
+                    icon: "../images/youtube-icon.png",
+                    name: "YouTube",
+                    example: "getting video recommendations"
                 },
                 right: {
-                    icon: "../images/instagram-icon.png",
-                    name: "Instagram"
+                    icon: "../images/amazon-icon.png",
+                    name: "Amazon",
+                    example: "limiting product tracking"
                 }
             }
         },
@@ -122,11 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
             apps: {
                 left: {
                     icon: "../images/siri-icon.png",
-                    name: "Siri"
+                    name: "Siri",
+                    example: "using for reminders"
                 },
                 right: {
                     icon: "../images/google-assistant-icon.png",
-                    name: "Google Assistant"
+                    name: "Google Assistant",
+                    example: "restricting recordings"
                 }
             }
         },
@@ -138,11 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
             apps: {
                 left: {
                     icon: "../images/google-maps-icon.png",
-                    name: "Google Maps"
+                    name: "Google Maps",
+                    example: "always sharing location"
                 },
                 right: {
                     icon: "../images/instagram-icon.png",
-                    name: "Instagram"
+                    name: "Instagram Stories",
+                    example: "tagging places selectively"
                 }
             }
         },
@@ -153,12 +179,14 @@ document.addEventListener('DOMContentLoaded', () => {
             dataType: "Biometric Data",
             apps: {
                 left: {
-                    icon: "../images/apple-pay-icon.png",
-                    name: "Apple Pay"
+                    icon: "../images/faceid-icon.png",
+                    name: "Face ID",
+                    example: "unlocking your phone"
                 },
                 right: {
-                    icon: "../images/boa-icon.png",
-                    name: "Mobile Banking Apps"
+                    icon: "../images/chase-icon.png",
+                    name: "Banking Apps",
+                    example: "checking security policies"
                 }
             }
         }
@@ -173,12 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const appSection = document.createElement('div');
     appSection.style.cssText = `
         display: flex;
-        justify-content: space-around;
-        align-items: end;
-        width: 40%;
-        margin: 10px auto;
-        padding: 5px;
-        opacity: 0; // Initially hidden
+        justify-content: center;
+        align-items: center;
+        width: 80%;
+        margin: 0 auto 8px; /* Reduced bottom margin to move it up */
+        padding: 0; /* Remove padding completely */
+        opacity: 0; /* Initially hidden */
         transition: opacity 0.5s ease;
     `;
 
@@ -187,9 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
     exampleText.textContent = "for example:";
     exampleText.style.cssText = `
         font-size: 0.8em;
-        color: #666;
-        margin-right: 5px;
-        margin-left: 70px;
+        color: rgba(0, 240, 255, 0.8);
+        margin-right: 8px;
+        font-style: italic;
+        line-height: 1;
     `;
 
     // Create left app container
@@ -199,8 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        margin-right: -25px;
-        margin-left: -25px;
+        margin: 0 6px; /* Closer spacing */
+        padding: 0; /* Remove padding */
+        background: transparent; /* Remove background */
+        border: none; /* Remove border */
     `;
 
     // Create right app container
@@ -210,26 +241,51 @@ document.addEventListener('DOMContentLoaded', () => {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        margin: 0 6px; /* Closer spacing */
+        padding: 0; /* Remove padding */
+        background: transparent; /* Remove background */
+        border: none; /* Remove border */
     `;
 
     // Create app icons
     const leftIcon = document.createElement('img');
     leftIcon.style.cssText = `
-        height: 35px;
-        border-radius: 8px;
-        margin-bottom: 3px;
+        height: 30px;
+        margin-bottom: 2px;
     `;
 
     const rightIcon = document.createElement('img');
     rightIcon.style.cssText = `
-        height: 35px;
-        border-radius: 8px;
-        margin-bottom: 3px;
+        height: 30px;
+        margin-bottom: 2px;
+    `;
+
+    // Create text elements for app descriptions
+    const leftAppText = document.createElement('span');
+    leftAppText.style.cssText = `
+        font-size: 0.75em; /* Smaller text */
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 2px;
+        max-width: 110px;
+        text-align: center;
+        line-height: 1.2; /* Reduced line height */
+    `;
+
+    const rightAppText = document.createElement('span');
+    rightAppText.style.cssText = `
+        font-size: 0.75em; /* Smaller text */
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 2px;
+        max-width: 100px;
+        text-align: center;
+        line-height: 1.2; /* Reduced line height */
     `;
 
     // Assemble the elements
     leftApp.appendChild(leftIcon);
     rightApp.appendChild(rightIcon);
+    leftApp.appendChild(leftAppText);
+    rightApp.appendChild(rightAppText);
     appSection.appendChild(exampleText); // Add "for example:" text
     appSection.appendChild(leftApp);
     appSection.appendChild(rightApp);
@@ -295,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create tap to begin button
     const tapToBeginBtn = document.createElement('button');
     tapToBeginBtn.textContent = '[ Tap to Begin ]';
+    tapToBeginBtn.id = 'startJourney';
     tapToBeginBtn.style.cssText = `
         background: transparent;
         color: rgb(115, 255, 254);
@@ -324,9 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
     scannerIntro.appendChild(typingText);
     scannerIntro.appendChild(loadingBarContainer);
     scannerIntro.appendChild(tapToBeginBtn);
-    
-    // Hide the narrative section initially
-    narrativeSection.style.display = 'none';
     
     // Add scanner intro to the document
     document.querySelector('.container').appendChild(scannerIntro);
@@ -378,31 +432,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, 500);
     
-    // Handle tap to begin
+    // Handle tap to begin (startJourney) button
     tapToBeginBtn.addEventListener('click', () => {
-        scannerIntro.style.opacity = '0';
-        scannerIntro.style.transition = 'opacity 0.7s ease';
-        
-        setTimeout(() => {
-            scannerIntro.style.display = 'none';
-            narrativeSection.style.display = 'block';
-            
-            // Fade in the narrative
-            narrativeSection.style.opacity = '0';
-            narrativeSection.style.transition = 'opacity 0.7s ease';
-            
-            setTimeout(() => {
-                narrativeSection.style.opacity = '1';
-            }, 100);
-        }, 700);
-    });
+        // Play start sound at normal volume
+        const startAudio = new Audio('/sound/start.mp3');
+        startAudio.volume = 1.0;
+        startAudio.play();
 
-    // Start the journey and show the first question
-    startJourneyBtn.addEventListener('click', () => {
-        document.querySelector('.background').classList.add('hidden');
-        questionSection.classList.remove('hidden');
-        appSection.style.opacity = '1'; // Show the app section
-        showQuestion();
+        // Add a 0.5s pulse effect before showing questions
+        tapToBeginBtn.style.transform = 'scale(1.12)';
+        tapToBeginBtn.style.boxShadow = '0 0 24px #00f0ff, 0 0 40px #00f0ff44';
+        setTimeout(() => {
+            tapToBeginBtn.style.transform = '';
+            tapToBeginBtn.style.boxShadow = '';
+            scannerIntro.style.opacity = '0';
+            scannerIntro.style.transition = 'opacity 0.7s ease';
+            setTimeout(() => {
+                scannerIntro.style.display = 'none';
+                questionSection.classList.remove('hidden');
+                appSection.style.opacity = '1'; // Show the app section
+                showQuestion();
+            }, 700);
+        }, 500);
     });
 
     // Update the slider value display
@@ -426,84 +477,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the next question on button click
     nextQuestionBtn.addEventListener('click', () => {
-        saveAnswer(responseSlider.value);
-        
-        const score = parseFloat(responseSlider.value);
-        const questionData = {
-            type: 'questionCompleted',
-            questionIndex: currentQuestionIndex,
-            score: score,
-            dataType: questions[currentQuestionIndex].dataType,
-            sessionId: sessionId
-        };
-        
-        // Save to Firebase
-        saveToFirebase(questionData);
-        
-        // Your existing window communication code
-        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-        const costumeUrlWithSession = `${costumeSiteUrl}?session=${sessionId}`;
-        
-        if (!costumeWindow || costumeWindow.closed) {
-            console.log("Opening new costume window with session:", sessionId);
-            costumeWindow = window.open(costumeUrlWithSession, 'costumeDisplay');
-            
-            setTimeout(() => {
-                try {
-                    costumeWindow.postMessage({
-                        ...questionData,
-                        sessionId: sessionId
-                    }, '*');
-                    console.log("Sent via newly opened window");
-                } catch (e) {
-                    console.error("New window send failed:", e);
-                }
-            }, 1500);
-        } else {
-            try {
-                costumeWindow.postMessage({
-                    ...questionData,
-                    sessionId: sessionId
-                }, '*');
-                console.log("Sent via existing window");
-            } catch (e) {
-                console.error("Existing window send failed:", e);
-            }
-        }
-        
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            showQuestion();
-        } else {
-            endJourney();
-        }
-    });
+        const revealAudio = new Audio('/sound/reveal.mp3');
+        revealAudio.volume = 0.3;
+        revealAudio.play();
 
-    // Add this at the start of your file, outside any function
-    function updateBackgroundColor(index) {
-        // Dark base colors
-        const baseColor = {
-            r: 15, g: 25, b: 60  // Dark blue-purple (#0f193c)
-        };
-        
-        // Fluorescent accent color
-        const accentColor = {r: 0, g: 240, b: 255};  // Cyan (#00f0ff)
-        
-        // Create a futuristic gradient with glow effect
-        document.body.style.background = `
-            radial-gradient(
-                circle at 60% 40%,
-                rgba(${accentColor.r}, ${accentColor.g}, ${accentColor.b}, 0.15) 5%,
-                rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 1) 70%
-            ),
-            linear-gradient(
-                135deg,
-                rgb(${baseColor.r}, ${baseColor.g}, ${baseColor.b}),
-                rgb(${baseColor.r + 10}, ${baseColor.g - 5}, ${baseColor.b + 15})
-            )
-        `;
-        document.body.style.backgroundColor = 'transparent';
-    }
+        // Add a 0.5s pulse effect before showing the next question or results
+        nextQuestionBtn.style.transform = 'scale(1.10)';
+        nextQuestionBtn.style.boxShadow = '0 0 18px #00f0ff, 0 0 30px #00f0ff44';
+        setTimeout(() => {
+            nextQuestionBtn.style.transform = '';
+            nextQuestionBtn.style.boxShadow = '';
+
+            saveAnswer(responseSlider.value);
+
+            const score = parseFloat(responseSlider.value);
+            const questionData = {
+                type: 'questionCompleted',
+                questionIndex: currentQuestionIndex,
+                score: score,
+                dataType: questions[currentQuestionIndex].dataType,
+                sessionId: sessionId
+            };
+
+            // Save to Firebase
+            saveToFirebase(questionData);
+
+            // Log the data but don't open a window
+            console.log("Data saved for question", currentQuestionIndex, "with score:", score);
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                endJourney();
+            }
+        }, 500);
+    });
 
     // Function to show the current question
     function showQuestion() {
@@ -512,9 +521,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sliderLabelLeft.textContent = question.leftLabel;
         sliderLabelRight.textContent = question.rightLabel;
 
-        // Update app icons
-        leftIcon.src = question.apps.left.icon; // Assuming you have the app data in your questions array
+        // Update app icons and text
+        leftIcon.src = question.apps.left.icon;
         rightIcon.src = question.apps.right.icon;
+        leftAppText.textContent = question.apps.left.example;
+        rightAppText.textContent = question.apps.right.example;
 
         // Reset slider position and display
         responseSlider.value = 50;
@@ -523,18 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset label font sizes to default
         sliderLabelLeft.style.fontSize = '1em';
         sliderLabelRight.style.fontSize = '1em';
-
-        // Update background color
-        updateBackgroundColor(currentQuestionIndex);
     }
-
-    // Add this to ensure background is set on initial load
-    document.addEventListener('DOMContentLoaded', () => {
-        updateBackgroundColor(0);
-    });
-
-    // Global variable to store reference to costume window if opened
-    let costumeWindow = null;
 
     // Function to end the journey
     function endJourney() {
@@ -544,37 +544,91 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalScore = responses.reduce((sum, response) => sum + parseFloat(response.answer), 0);
         const averageScore = totalScore / questions.length;
 
-        // Find lowest and highest scores
-        let lowest = responses[0];
-        let highest = responses[0];
-
-        responses.forEach((response) => {
-            if (parseFloat(response.answer) < parseFloat(lowest.answer)) {
-                lowest = response;
-            }
-            if (parseFloat(response.answer) > parseFloat(highest.answer)) {
-                highest = response;
+        // Prepare detailed results by data type
+        const surveyDetailedResults = {};
+        questions.forEach((q, idx) => {
+            // Find the response for this question
+            const resp = responses.find(r => r.question === idx + 1);
+            if (resp) {
+                surveyDetailedResults[q.dataType] = parseFloat(resp.answer);
             }
         });
 
-        // Get data types for lowest and highest
-        const weakestDataType = questions[lowest.question - 1].dataType;
-        const strongestDataType = questions[highest.question - 1].dataType;
-        
-        // Define styles with futuristic theme optimized for light background
+        // --- Sci-fi Progress Bar Helper ---
+        function getProgressBar(score) {
+            // Score is 0-100
+            const percent = Math.max(0, Math.min(100, score));
+            // Use a blue-cyan gradient for all bars
+            const barColor = 'linear-gradient(90deg, #00f0ff 0%, #0070ff 100%)';
+            return `
+            <div style="
+                width: 100%;
+                background: rgba(20,30,60,0.7);
+                border-radius: 8px;
+                margin: 8px 0 20px 0;
+                box-shadow: 0 0 8px #00f0ff33, 0 0 1px #fff inset;
+                height: 10px;
+                overflow: hidden;
+                position: relative;
+            ">
+                <div style="
+                    width: ${percent}%;
+                    height: 100%;
+                    background: ${barColor};
+                    box-shadow: 0 0 12px #00f0ff, 0 0 2px #fff inset;
+                    border-radius: 8px 0 0 8px;
+                    transition: width 0.7s cubic-bezier(.4,2,.6,1);
+                    position: absolute;
+                    left: 0; top: 0;
+                "></div>
+                <span style="
+                    position: absolute;
+                    right: 12px; top: 0; height: 100%;
+                    display: flex; align-items: center;
+                    color: #fff; font-family: 'Orbitron', monospace;
+                    font-size: 1em; text-shadow: 0 0 4px #00f0ff;
+                    letter-spacing: 1px;
+                ">${percent.toFixed(1)}</span>
+            </div>
+            `;
+        }
+
+        // --- Build the detailed results section ---
+        let detailsHTML = '';
+        Object.entries(surveyDetailedResults).forEach(([dataType, score]) => {
+            detailsHTML += `
+                <div style="margin-bottom: 10px;">
+                    <span style="font-family:'Orbitron',sans-serif; color:ghostwhite; font-size:0.9em; letter-spacing:1px;">
+                        ${dataType}
+                    </span>
+                    ${getProgressBar(score)}
+                </div>
+            `;
+        });
+
+        // --- Styles ---
         const styles = {
-            container: 'padding: 30px; border-radius: 15px;', // Removed background color
-            title: 'font-size: 1.8em; color: #0f193c; margin-bottom: 15px; text-align: center; text-shadow: 0 0 3px rgba(0, 240, 255, 0.3);',
-            divider: 'width: 80%; height: 2px; background: linear-gradient(to right, transparent, #00f0ff, transparent); margin: 20px auto 30px;',
-            scoreContainer: 'font-size: 1.4em; color: #1e0f3c; text-align: center; margin: 25px 0; padding: 20px; background: rgba(0, 240, 255, 0.1); border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.3);',
-            score: 'font-size: 1.5em; color: #0f193c; font-weight: bold; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);',
-            dataArea: 'text-align: center; font-size: 1.2em; margin: 10px 0; padding: 15px;',
-            weakArea: 'color:rgb(233, 17, 53); font-weight: bold; text-shadow: 0 0 5px rgba(255, 51, 102, 0.3);',
-            strongArea: 'color:rgb(12, 101, 142); font-weight: bold; text-shadow: 0 0 5px rgba(0, 238, 255, 0.4);',
-            footer: 'margin: 25px 0 10px; font-style: italic; color: #444a7c; text-align: center; font-size: 1.1em;'
+            container: 'padding: 10px; border-radius: 15px;',
+            title: `font-size: 1.8em; color: #00f9ff; margin-bottom: 15px; margin-top: 10px; text-align: center; text-shadow: 0 0 3px rgba(0, 240, 255, 0.3);font-family: 'Orbitron', sans-serif;`,
+            divider: 'width: 75%; height: 2px; background: linear-gradient(to right, transparent, #00f0ff, transparent); animation: glowPulse 4s infinite;margin: 15px auto 25px;',
+            scoreContainer: 'font-size: 1.2em; color: ghostwhite; text-align: center; margin: 20px 0 10px 0; padding: 16px; background: rgba(0, 240, 255, 0.1); border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.3);',
+            score: 'font-size: 1.4em; color: #00f9ff; font-weight: bold; text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);',
+            footer: 'margin: 20px 0 10px; font-style: italic; color: #444a7c; text-align: center; font-size: 1.1em;',
+            // New: scrollable bar section
+            barSection: `
+                margin: 20px 0 5px 0;
+                max-height: 200px;
+                overflow-y: auto;
+                background: rgba(10, 30, 60, 0.18);
+                border-radius: 12px;
+                box-shadow: 0 0 12px #00f0ff22;
+                padding: 18px 18px 8px 18px;
+                scrollbar-width: thin;
+                scrollbar-color: #00f0ff #001a2e;
+            `
         };
-        
-        // Display the results with futuristic styles
+
+        // --- Display the results with progress bars in a scrollable section ---
         questionSection.innerHTML = `
             <div style="${styles.container}">
                 <h2 style="${styles.title}">Your Digital Privacy Profile</h2>
@@ -585,34 +639,48 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span style="${styles.score}">${averageScore.toFixed(1)}</span> out of 100
                 </div>
 
-                <div style="${styles.dataArea}">
-                    Your most vulnerable area is: 
-                    <span style="${styles.weakArea}">${weakestDataType}</span>
-                </div>
-
-                <div style="${styles.dataArea}">
-                    Your strongest area is: 
-                    <span style="${styles.strongArea}">${strongestDataType}</span>
+                <div style="margin: 30px 0 0px 0;">
+                    <span style="font-family:'Orbitron',sans-serif; color:#00f0ff; font-size:1.1em;">
+                        Detailed Results by Data Type
+                    </span>
+                    <div style="${styles.barSection}">
+                        ${detailsHTML}
+                    </div>
                 </div>
 
                 <p style="${styles.footer}">
                     Check your own digital privacy profile and costumes!
                 </p>
+                <button id="restartBtn" style="
+                    margin-top: 20px;
+                    background: transparent;
+                    color: #00f0ff;
+                    border: 2px solid #00f0ff;
+                    padding: 10px 28px;
+                    font-size: 1.1em;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: background 0.3s, color 0.3s;
+                    font-family: 'Orbitron', sans-serif;
+                    box-shadow: 0 0 8px rgba(0,240,255,0.15);
+                ">Restart</button>
             </div>
         `;
 
-        // Create a detailed report for Site B
-        const surveyDetailedResults = {};
-        
-        // Organize results by data type
-        responses.forEach(response => {
-            const questionIndex = response.question - 1;
-            const dataType = questions[questionIndex].dataType;
-            const score = parseFloat(response.answer);
-            
-            // Store each score by data type
-            surveyDetailedResults[dataType] = score;
-        });
+        // Optionally, add custom scrollbar styling for Webkit browsers
+        const style = document.createElement('style');
+        style.textContent = `
+            .question-section div[style*="overflow-y: auto"]::-webkit-scrollbar {
+                width: 7px;
+                background: #001a2e;
+                border-radius: 8px;
+            }
+            .question-section div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb {
+                background: #00f0ff;
+                border-radius: 8px;
+            }
+        `;
+        document.head.appendChild(style);
 
         // Save final results to Firebase
         const finalResultsRef = ref(database, `sessions/${sessionId}/finalResults`);
@@ -620,8 +688,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sessionId: sessionId,
             timestamp: Date.now(),
             averageScore: averageScore,
-            weakestDataType: weakestDataType,
-            strongestDataType: strongestDataType,
             detailedResults: surveyDetailedResults
         };
 
@@ -633,7 +699,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error saving final results:', error);
             });
 
-        // Your existing window communication code...
+        // Add event listener for the Restart button
+        const restartBtn = document.getElementById('restartBtn');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', () => {
+                // Play sound effect
+                const audio = new Audio('/sound/restart.mp3');
+                audio.play();
+
+                // Stop the BGM
+                if (bgm) {
+                    bgm.pause();
+                    bgm.currentTime = 0;
+                }
+
+                // Add a 2 second delay before redirecting
+                setTimeout(() => {
+                    window.location.href = '/index.html';
+                }, 3000);
+            });
+        }
     }
 
     // Function to save answers
@@ -655,37 +740,60 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (score <= 75) return 3;   // Secure state (51-75)
         else return 4;                    // Optimal state (76-100)
     }
-
-    // Open the costume site in a new window at the beginning to establish communication
-    document.addEventListener('DOMContentLoaded', function() {
-        // Pre-open the costume site to establish a window reference
-        const costumeSiteUrl = 'https://lionheartchu.github.io/costume-display/';
-        console.log("Pre-opening costume site window");
-        
-        // Use a button to open the window (to avoid popup blockers)
-        const openWindowBtn = document.createElement('button');
-        openWindowBtn.textContent = 'Connect To Costume Display';
-        openWindowBtn.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 240, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(0, 255, 240, 0.8);
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-        `;
-        
-        openWindowBtn.onclick = function() {
-            costumeWindow = window.open(costumeSiteUrl, 'costumeDisplay');
-            console.log("Costume site window opened");
-            this.textContent = 'Connected';
-            this.disabled = true;
-            this.style.opacity = '0.5';
-        };
-        
-        document.body.appendChild(openWindowBtn);
-    });
 });
+// Canvas code should be inside here
+const canvas = document.getElementById('particleCanvas');
+if (canvas) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = Array.from({ length: 50 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        speed: Math.random() * 0.4 + 0.1,
+        angle: Math.random() * 2 * Math.PI,
+        opacity: Math.random() * 0.3 + 0.2
+    }));
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+        for (const p of particles) {
+            ctx.fillStyle = `rgba(0,255,255,${p.opacity})`;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle); // 让每个菱形角度不同
+            
+            const size = p.radius * 2.2; // 菱形尺寸（根据原始 radius 放大点）
+    
+            ctx.beginPath();
+            ctx.moveTo(0, -size);       // 上
+            ctx.lineTo(size, 0);        // 右
+            ctx.lineTo(0, size);        // 下
+            ctx.lineTo(-size, 0);       // 左
+            ctx.closePath();
+            ctx.fill();
+    
+            ctx.restore();
+    
+            // 移动粒子
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+    
+            // Wrap around screen edges
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+        }
+        requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+}
