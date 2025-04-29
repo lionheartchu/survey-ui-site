@@ -90,18 +90,29 @@ const dialogues = [
         type();
     }
 
-    button.addEventListener('click', () => {
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Add multiple event types to ensure it works on all devices
+    ['click', 'touchstart', 'touchend'].forEach(evt => {
+      nextBtn.addEventListener(evt, function(e) {
+        if (evt === 'touchstart' || evt === 'touchend') {
+          e.preventDefault(); // Prevent double firing on touch devices
+        }
+        
         if (typing) return;
         if (index < dialogues.length - 1) {
-            index++;
-            typeWriter(dialogues[index], textEl);
+          index++;
+          typeWriter(dialogues[index], textEl);
         } else {
-            // Store both playing state AND current position
-            sessionStorage.setItem('bgmPlaying', 'true');
-            sessionStorage.setItem('bgmPosition', window.bgm.currentTime);
-            window.location.href = "overview.html";
+          sessionStorage.setItem('bgmPlaying', 'true');
+          sessionStorage.setItem('bgmPosition', window.bgm.currentTime);
+          window.location.href = "overview.html";
         }
+      });
     });
+
+    // Remove the original click handler to avoid duplicates
+    nextBtn.removeEventListener('click', button.onclick);
 
     // Modify the scan button click handler to stop music
     document.querySelector('.scan-btn')?.addEventListener('click', () => {
