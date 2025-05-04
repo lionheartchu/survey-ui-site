@@ -21,6 +21,34 @@ const dialogues = [
 
     // Initialize button click starts the sequence
     initializeBtn.addEventListener('click', function() {
+      try {
+        // If your main app is in an iframe with id 'displayFrame'
+        const displayFrame = document.getElementById('displayFrame');
+        if (displayFrame && displayFrame.contentWindow) {
+          displayFrame.contentWindow.postMessage({
+            type: 'initialize',
+            action: 'initializeClicked'
+          }, '*');
+        } 
+        // If your main app is in a separate window
+        else if (window.opener) {
+          window.opener.postMessage({
+            type: 'initialize',
+            action: 'initializeClicked'
+          }, '*');
+        }
+        // If neither, try broadcasting to the parent window
+        else {
+          window.parent.postMessage({
+            type: 'initialize',
+            action: 'initializeClicked'
+          }, '*');
+        }
+        console.log('Sent initialization message to display app');
+      } catch (error) {
+        console.error('Failed to send initialization message:', error);
+      }
+          
       // Use a different sound for initialization
       const initSound = new Audio('sound/soft-activation.mp3');
       initSound.volume = 0.8;
