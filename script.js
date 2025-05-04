@@ -21,6 +21,20 @@ const dialogues = [
 
     // Initialize button click starts the sequence
     initializeBtn.addEventListener('click', function() {
+      const displayFrame = document.getElementById('displayFrame');
+      if (displayFrame && displayFrame.contentWindow) {
+          // Send message to iframe
+          displayFrame.contentWindow.postMessage({
+              type: 'initialize',
+              action: 'initializeClicked'
+          }, '*');
+          
+          // Show iframe after your desired animations complete
+          setTimeout(() => {
+              displayFrame.style.display = 'block';
+          }, 3000); // Adjust this timing to match when you want to show the main content
+      }
+      
       try {
         // If your main app is in an iframe with id 'displayFrame'
         const displayFrame = document.getElementById('displayFrame');
@@ -48,7 +62,7 @@ const dialogues = [
       } catch (error) {
         console.error('Failed to send initialization message:', error);
       }
-          
+
       // Use a different sound for initialization
       const initSound = new Audio('sound/soft-activation.mp3');
       initSound.volume = 0.8;
