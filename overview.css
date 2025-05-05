@@ -18,14 +18,19 @@ body {
   position:relative;
 }
 .overview-title {
-  font-size: 2.5em;
-  margin-bottom: 10px;
+  font-size: 2.8em;
+  margin-bottom: 15px;
+  line-height: 1.2;
 }
 .overview-subtitle {
-  font-size: 1.1em;
+  font-size: 1.2em;
   font-weight: 300;
   font-family: 'Prompt', sans-serif;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
+  width: 90%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .overview-grid {
   display: grid;
@@ -73,10 +78,6 @@ body {
   opacity: 0;
   transition: transform 0.4s ease-out, opacity 0.4s ease-out;
   box-shadow: 0 0 5px rgba(0, 249, 255, 0.5);
-}
-
-.dot:hover::after {
-  /* Remove this rule completely */
 }
 
 .dot:hover {
@@ -144,17 +145,17 @@ body {
 .info-panel {
   display: flex;
   flex-direction: column;
-  gap: 110px;
+  gap: 120px;
   font-family: 'Prompt', sans-serif;
   flex: 1;
-  min-width: 300px;
+  min-width: 320px;
   z-index: 2;
 }
 .info-item {
   background: rgba(0,255,255,0.08);
   border: 1px solid rgba(0,255,255,0.3);
   border-radius: 12px;
-  padding: 18px 24px;
+  padding: 20px 26px;
   transition: all 0.3s ease;
   text-align: left;
   opacity: 0;
@@ -162,7 +163,8 @@ body {
   transform: translateY(20px);
   position: relative;
   z-index: 3;
-  font-size: 1.1em;
+  font-size: 1.25em;
+  line-height: 1.4;
 }
 .info-item:hover {
   background: rgba(0,255,255,0.2);
@@ -175,12 +177,12 @@ body {
 
 .info-title {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 .info-desc {
-  font-size: 1em;
+  font-size: 1.1em;
   opacity: 0.8;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .scan-btn {
   padding: 15px 30px;
@@ -262,6 +264,9 @@ body {
 .typing-text {
   display: none;
   text-align: center;
+  font-size: 1.3em;
+  line-height: 1.5;
+  margin-bottom: 10px;
 }
 
 .typing-text.visible {
