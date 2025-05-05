@@ -8,6 +8,12 @@ const dialogues = [
   ];
   
   document.addEventListener('DOMContentLoaded', function() {
+    const { database, ref, set } = window.firebaseDb;
+    
+    const narrativeSessionId = `narrative_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    window.narrativeSessionId = narrativeSessionId;
+    sessionStorage.setItem('narrativeSessionId', narrativeSessionId);
+
     let index = 0;
     const textEl = document.getElementById('dialogueText');
     const button = document.getElementById('nextBtn');
@@ -21,47 +27,11 @@ const dialogues = [
 
     // Initialize button click starts the sequence
     initializeBtn.addEventListener('click', function() {
-      const displayFrame = document.getElementById('displayFrame');
-      if (displayFrame && displayFrame.contentWindow) {
-          // Send message to iframe
-          displayFrame.contentWindow.postMessage({
-              type: 'initialize',
-              action: 'initializeClicked'
-          }, '*');
-          
-          // Show iframe after your desired animations complete
-          setTimeout(() => {
-              displayFrame.style.display = 'block';
-          }, 3000); // Adjust this timing to match when you want to show the main content
-      }
       
-      try {
-        // If your main app is in an iframe with id 'displayFrame'
-        const displayFrame = document.getElementById('displayFrame');
-        if (displayFrame && displayFrame.contentWindow) {
-          displayFrame.contentWindow.postMessage({
-            type: 'initialize',
-            action: 'initializeClicked'
-          }, '*');
-        } 
-        // If your main app is in a separate window
-        else if (window.opener) {
-          window.opener.postMessage({
-            type: 'initialize',
-            action: 'initializeClicked'
-          }, '*');
-        }
-        // If neither, try broadcasting to the parent window
-        else {
-          window.parent.postMessage({
-            type: 'initialize',
-            action: 'initializeClicked'
-          }, '*');
-        }
-        console.log('Sent initialization message to display app');
-      } catch (error) {
-        console.error('Failed to send initialization message:', error);
-      }
+      set(ref(database, `status/${narrativeSessionId}`), {
+        step: 'booting',
+        timestamp: Date.now()
+      });
 
       // Use a different sound for initialization
       const initSound = new Audio('sound/soft-activation.mp3');
@@ -109,9 +79,9 @@ const dialogues = [
           setTimeout(() => {
             typeWriter(dialogues[index], textEl);
           }, 500);
-        }, 3000);
+        }, 5000);
         
-      }, 600);
+      }, 800);
       
       // Create bubbles immediately for background effect
       for (let i = 0; i < 40; i++) {
@@ -162,9 +132,14 @@ const dialogues = [
           index++;
           typeWriter(dialogues[index], textEl);
         } else {
-          sessionStorage.setItem('bgmPlaying', 'true');
-          sessionStorage.setItem('bgmPosition', window.bgm.currentTime);
-          window.location.href = "overview.html";
+          set(ref(database, `status/${narrativeSessionId}`), {
+            step: 'example_scan',
+            timestamp: Date.now()
+          }).then(() => {
+            sessionStorage.setItem('bgmPlaying', 'true');
+            sessionStorage.setItem('bgmPosition', window.bgm.currentTime);
+            window.location.href = "overview.html";
+          });
         }
       });
     });

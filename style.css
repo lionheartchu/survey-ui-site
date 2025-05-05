@@ -67,14 +67,14 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 10;
-    animation: fadeOut 4s ease forwards;
+    animation: fadeOut 5s ease forwards;
   }
   
   .wake-text {
     font-size: 1.8em;
     color: #0ff;
     opacity: 0.8;
-    animation: blink 1.2s infinite alternate;
+    animation: blink 1.4s infinite alternate;
   }
   
   @keyframes fadeOut {
