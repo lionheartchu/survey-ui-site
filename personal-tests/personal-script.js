@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!bgm) {
         bgm = new Audio('../sound/bgm2.mp3');
         bgm.loop = true;
-        bgm.volume = 0.15; // Set to a comfortable volume
+        bgm.volume = 0.12; // Set to a comfortable volume
         bgm.play().catch(err => console.log("Error playing BGM:", err));
     }
 
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!bgm || bgm.paused) {
             bgm = new Audio('../sound/bgm2.mp3');
             bgm.loop = true;
-            bgm.volume = 0.15;
+            bgm.volume = 0.12;
             bgm.play()
                 .then(() => console.log("BGM started successfully"))
                 .catch(err => console.error("Error playing BGM:", err));

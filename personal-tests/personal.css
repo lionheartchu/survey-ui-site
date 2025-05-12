@@ -157,15 +157,70 @@ button:hover {
     font-weight: bold;
 }
 
-input[type="range"] {
-    -webkit-appearance: none;
+.slider-wrapper {
+    position: relative;
     width: 60%;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.6); /* More transparent track */
-    border-radius: 4px; /* Smaller border radius */
-    outline: none;
     margin-left: 5%;
     margin-right: 5%;
+}
+
+.slider-divider {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 3px;
+    height: 24px;
+    background: rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.4),
+                0 0 12px rgba(0, 240, 255, 0.2);
+    pointer-events: none;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.divider-25 {
+    left: 25%;
+    background:ghostwhite;
+    opacity:0.5;
+    width:2px;
+    height:18px;
+}
+
+.divider-50 {
+    left: 50%;
+}
+
+.divider-75 {
+    left: 75%;
+    background:ghostwhite;
+    opacity:0.5;
+    width:2px;
+    height:18px;
+}
+
+.divider-text {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1em;
+    color: rgb(115,255,254);
+    white-space: nowrap;
+    margin-top: 10px;
+    text-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+    font-family: "Prompt", sans-serif;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%; /* Changed from 60% to 100% since parent handles width */
+    height: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    outline: none;
+    margin: 0; /* Remove margins since parent handles spacing */
     border: 1px solid rgba(0, 240, 255, 0.4);
     box-shadow: 0 0 6px rgba(0, 240, 255, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.7);
 }

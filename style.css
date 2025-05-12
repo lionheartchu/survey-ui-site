@@ -107,7 +107,7 @@ body {
   
   .dialogue-box {
     position: absolute;
-    bottom: 40px;
+    bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 10, 20, 0.95);
@@ -121,7 +121,7 @@ body {
     box-shadow: 0 0 40px rgba(0, 255, 255, 0.25);
     border-radius: 16px;
     z-index: 20;
-    height: 20vh;
+    height: 22vh;
     pointer-events: auto;
   }
   
@@ -143,12 +143,12 @@ body {
     font-weight: bold;
     color: #06e0ff;
     margin-bottom: 12px;
-    font-size: 1.4em;
+    font-size: 1.5em;
   }
   
   .npc-text {
     font-family: 'Prompt', sans-serif;
-    font-size: 1.3em;
+    font-size: 1.4em;
     line-height: 1.7em;
     margin-bottom: 22px;
     white-space: pre-line;
