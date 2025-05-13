@@ -4,6 +4,41 @@ let costumeWindow = null;
 // Add global BGM variable at the top of the file (line 1)
 let bgm;
 
+// Create audio context for iOS compatibility
+let audioContext = null;
+try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch (e) {
+    console.log('Web Audio API not supported');
+}
+
+// Function to initialize and play BGM
+function initBGM() {
+    if (!bgm) {
+        bgm = new Audio('../sound/bgm2.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.12;
+        
+        // Resume audio context if it was suspended (iOS requirement)
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        
+        // Play with user interaction
+        const playPromise = bgm.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.log("Error playing BGM:", err);
+                // If autoplay fails, set up interaction-based playback
+                document.addEventListener('click', function initAudio() {
+                    bgm.play();
+                    document.removeEventListener('click', initAudio);
+                }, { once: true });
+            });
+        }
+    }
+}
+
 // Move canvas code inside DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     // Get Firebase functions from window.firebaseDb
@@ -20,13 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sessionId = generateSessionId();
     console.log("Session ID:", sessionId);
 
-    // Initialize and play background music
-    if (!bgm) {
-        bgm = new Audio('../sound/bgm2.mp3');
-        bgm.loop = true;
-        bgm.volume = 0.12; // Set to a comfortable volume
-        bgm.play().catch(err => console.log("Error playing BGM:", err));
-    }
+    // Initialize BGM
+    initBGM();
 
     // Immediately store a timestamp at the session root
     const sessionRootRef = ref(database, `sessions/${sessionId}`);
@@ -439,14 +469,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Handle tap to begin (startJourney) button
     tapToBeginBtn.addEventListener('click', () => {
-        // Start BGM only after user interaction (solves autoplay restrictions)
+        // Resume audio context on user interaction
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        
+        // Start BGM only after user interaction
         if (!bgm || bgm.paused) {
-            bgm = new Audio('../sound/bgm2.mp3');
-            bgm.loop = true;
-            bgm.volume = 0.12;
-            bgm.play()
-                .then(() => console.log("BGM started successfully"))
-                .catch(err => console.error("Error playing BGM:", err));
+            initBGM();
         }
         
         // Play start sound at normal volume

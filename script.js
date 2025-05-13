@@ -22,76 +22,109 @@ const dialogues = [
     const initializeContainer = document.querySelector('.initialize-container');
     let typing = false;
 
+    // Create audio context for iOS compatibility
+    let audioContext = null;
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+        console.log('Web Audio API not supported');
+    }
+
+    // Function to initialize and play BGM
+    function initBGM() {
+        if (!window.bgm) {
+            window.bgm = new Audio('sound/bgm1.mp3');
+            window.bgm.loop = true;
+            window.bgm.volume = 0.5;
+            
+            // Resume audio context if it was suspended (iOS requirement)
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            // Play with user interaction
+            const playPromise = window.bgm.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log("Error playing BGM:", err);
+                    // If autoplay fails, set up interaction-based playback
+                    document.addEventListener('click', function initAudio() {
+                        window.bgm.play();
+                        document.removeEventListener('click', initAudio);
+                    }, { once: true });
+                });
+            }
+        }
+    }
+
     // Hide the wake animation and dialogue initially
     document.querySelector('.dialogue-box').style.display = 'none';
 
     // Initialize button click starts the sequence
     initializeBtn.addEventListener('click', function() {
+        // Resume audio context on user interaction
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
       
-      set(ref(database, `status/${narrativeSessionId}`), {
-        step: 'booting',
-        timestamp: Date.now()
-      });
+        set(ref(database, `status/${narrativeSessionId}`), {
+            step: 'booting',
+            timestamp: Date.now()
+        });
 
-      // Use a different sound for initialization
-      const initSound = new Audio('sound/soft-activation.mp3');
-      initSound.volume = 0.8;
-      initSound.play();
+        // Use a different sound for initialization
+        const initSound = new Audio('sound/soft-activation.mp3');
+        initSound.volume = 0.8;
+        initSound.play();
       
-      // Add a pause before hiding the initialize button
-      setTimeout(() => {
-        // Hide the initialize button container
-        initializeContainer.style.display = 'none';
-        
-        // Show the wake overlay after the pause
-        wakeOverlay.style.display = 'flex';
-        
-        // Start BGM with a slight delay
+        // Add a pause before hiding the initialize button
         setTimeout(() => {
-          if (!window.bgm) {
-            window.bgm = new Audio('sound/bgm1.mp3');
-            window.bgm.loop = true;
-            window.bgm.volume = 0.5;
-            window.bgm.play().catch(err => console.log("Error playing BGM:", err));
-          }
-        }, 1000);
+            // Hide the initialize button container
+            initializeContainer.style.display = 'none';
+            
+            // Show the wake overlay after the pause
+            wakeOverlay.style.display = 'flex';
+            
+            // Start BGM with a slight delay
+            setTimeout(() => {
+                initBGM();
+            }, 1000);
+            
+            // Wait for boot animation to complete before showing dialogue
+            setTimeout(() => {
+                // COMPLETELY REMOVE the wake overlay instead of just hiding it
+                wakeOverlay.style.display = 'none';
+                wakeOverlay.style.pointerEvents = 'none'; // Disable any pointer events
+                wakeOverlay.style.zIndex = '-1'; // Move it below other elements
+                
+                // Make dialogue box fully interactive
+                const dialogueBox = document.querySelector('.dialogue-box');
+                dialogueBox.style.display = 'flex';
+                dialogueBox.style.zIndex = '20'; // Higher z-index than wake-overlay
+                dialogueBox.style.pointerEvents = 'auto'; // Ensure pointer events work
+                
+                // Ensure the next button is clickable
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.style.zIndex = '25';
+                nextBtn.style.position = 'relative';
+                nextBtn.style.pointerEvents = 'auto';
+                
+                // Delay before typing starts
+                setTimeout(() => {
+                    typeWriter(dialogues[index], textEl);
+                }, 500);
+            }, 5000);
+        }, 800);
         
-        // Wait for boot animation to complete before showing dialogue
-        setTimeout(() => {
-          // COMPLETELY REMOVE the wake overlay instead of just hiding it
-          wakeOverlay.style.display = 'none';
-          wakeOverlay.style.pointerEvents = 'none'; // Disable any pointer events
-          wakeOverlay.style.zIndex = '-1'; // Move it below other elements
-          
-          // Make dialogue box fully interactive
-          const dialogueBox = document.querySelector('.dialogue-box');
-          dialogueBox.style.display = 'flex';
-          dialogueBox.style.zIndex = '20'; // Higher z-index than wake-overlay
-          dialogueBox.style.pointerEvents = 'auto'; // Ensure pointer events work
-          
-          // Ensure the next button is clickable
-          const nextBtn = document.getElementById('nextBtn');
-          nextBtn.style.zIndex = '25';
-          nextBtn.style.position = 'relative';
-          nextBtn.style.pointerEvents = 'auto';
-          
-          // Delay before typing starts
-          setTimeout(() => {
-            typeWriter(dialogues[index], textEl);
-          }, 500);
-        }, 5000);
-        
-      }, 800);
-      
-      // Create bubbles immediately for background effect
-      for (let i = 0; i < 40; i++) {
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.style.left = Math.random() * 100 + 'vw';
-        bubble.style.animationDuration = 4 + Math.random() * 4 + 's';
-        bubble.style.width = bubble.style.height = 6 + Math.random() * 6 + 'px';
-        document.body.appendChild(bubble);
-      }
+        // Create bubbles immediately for background effect
+        for (let i = 0; i < 40; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.left = Math.random() * 100 + 'vw';
+            bubble.style.animationDuration = 4 + Math.random() * 4 + 's';
+            bubble.style.width = bubble.style.height = 6 + Math.random() * 6 + 'px';
+            document.body.appendChild(bubble);
+        }
     });
 
     function typeWriter(text, element, delay = 30) {
