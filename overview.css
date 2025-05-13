@@ -42,15 +42,15 @@ body {
 .body-map {
   position: relative;
   width: 100%;
-  max-width: 400px;
-  min-width: 300px;
+  max-width: 600px;
+  min-width: 400px;
   z-index: 1;
   margin: 0 auto;
 }
 .body-img {
   width: 100%;
   height: auto;
-  min-height: 400px;
+  min-height: 600px;
   opacity: 0.85;
   object-fit: contain;
 }
@@ -417,22 +417,38 @@ body {
   transform: translateX(-50%) scaleY(1) rotate(-133.5deg);
 }
 
-/* Add media query for older iPads */
+/* Update media query for better iPad support */
 @media screen and (max-width: 1024px) and (min-resolution: 1dppx) {
   .body-map {
-    min-width: 350px;
-    max-width: 500px;
+    min-width: 450px;
+    max-width: 700px;
   }
   
   .body-img {
-    min-height: 500px;
+    min-height: 650px;
   }
   
   .overview-grid {
-    gap: 30px; /* Reduce gap on smaller screens */
+    gap: 40px;
+    padding: 0 20px;
   }
   
   .info-panel {
-    min-width: 280px; /* Adjust panel width for better fit */
+    min-width: 300px;
+  }
+}
+
+/* Add specific media query for larger screens */
+@media screen and (min-width: 1025px) {
+  .body-map {
+    max-width: 700px;
+  }
+  
+  .body-img {
+    min-height: 700px;
+  }
+  
+  .overview-grid {
+    gap: 60px;
   }
 }

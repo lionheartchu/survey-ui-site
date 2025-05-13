@@ -95,53 +95,56 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.addEventListener('touchstart', handleFirstInteraction);
   }
 
+  // Preload audio files
+  const typingSound = new Audio('sound/typing.mp3');
+  typingSound.volume = 0.4;
+  typingSound.load(); // Preload the audio
+
+  // Create audio context for iOS compatibility
+  let audioContext = null;
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  } catch (e) {
+    console.log('Web Audio API not supported');
+  }
+
   // Modified typing effect for overview page
   async function typeText(element, text) {
-      const originalText = text;  // Store the original text
-      element.textContent = '';   // Clear the element
-      
-      // Create audio context for iOS compatibility
-      let audioContext = null;
-      try {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      } catch (e) {
-          console.log('Web Audio API not supported');
-      }
-      
-      // Play typing sound once for the whole sentence
-      const typingSound = new Audio('sound/typing.mp3');
-      typingSound.volume = 0.4;
-      
-      // Resume audio context if it was suspended (iOS requirement)
-      if (audioContext && audioContext.state === 'suspended') {
-          audioContext.resume();
-      }
-      
-      // Play with proper error handling
-      const playPromise = typingSound.play();
-      if (playPromise !== undefined) {
-          playPromise.catch(err => {
-              console.log("Error playing typing sound:", err);
-              // If autoplay fails, try to play on next interaction
-              const handleInteraction = () => {
-                  typingSound.play();
-                  document.removeEventListener('click', handleInteraction);
-                  document.removeEventListener('touchstart', handleInteraction);
-              };
-              document.addEventListener('click', handleInteraction);
-              document.addEventListener('touchstart', handleInteraction);
-          });
-      }
-      
-      // Type each character
-      for (let i = 0; i < originalText.length; i++) {
-          element.textContent += originalText.charAt(i);  // Add each character
-          await new Promise(resolve => setTimeout(resolve, 50));
-      }
-      
-      // Stop sound when sentence is complete
-      typingSound.pause();
-      typingSound.currentTime = 0;
+    const originalText = text;  // Store the original text
+    element.textContent = '';   // Clear the element
+    
+    // Resume audio context if it was suspended (iOS requirement)
+    if (audioContext && audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
+    
+    // Reset and play typing sound
+    typingSound.currentTime = 0;
+    const playPromise = typingSound.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(err => {
+        console.log("Error playing typing sound:", err);
+        // If autoplay fails, try to play on next interaction
+        const handleInteraction = () => {
+          typingSound.currentTime = 0;
+          typingSound.play();
+          document.removeEventListener('click', handleInteraction);
+          document.removeEventListener('touchstart', handleInteraction);
+        };
+        document.addEventListener('click', handleInteraction);
+        document.addEventListener('touchstart', handleInteraction);
+      });
+    }
+    
+    // Type each character with slightly faster timing
+    for (let i = 0; i < originalText.length; i++) {
+      element.textContent += originalText.charAt(i);
+      await new Promise(resolve => setTimeout(resolve, 40)); // Reduced from 50ms to 40ms
+    }
+    
+    // Stop sound when sentence is complete
+    typingSound.pause();
+    typingSound.currentTime = 0;
   }
 
   const title = document.querySelector('.overview-title');
