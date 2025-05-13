@@ -157,7 +157,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     
+    // Function to start the animation sequence
     async function startAnimationSequence() {
+        // Try to resume audio context immediately
+        if (audioContext && audioContext.state === 'suspended') {
+            try {
+                await audioContext.resume();
+            } catch (e) {
+                console.log("Error resuming audio context:", e);
+            }
+        }
+
         title.classList.remove('hidden');
         title.classList.add('fade-in');
         
@@ -179,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         grid.classList.add('fade-in');
     }
     
+    // Start the animation sequence immediately
     startAnimationSequence();
 
     // *** MOVE GLOW FIELD CODE INSIDE DOM READY ***
