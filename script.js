@@ -48,10 +48,13 @@ const dialogues = [
                 playPromise.catch(err => {
                     console.log("Error playing BGM:", err);
                     // If autoplay fails, set up interaction-based playback
-                    document.addEventListener('click', function initAudio() {
+                    const handleInteraction = () => {
                         window.bgm.play();
-                        document.removeEventListener('click', initAudio);
-                    }, { once: true });
+                        document.removeEventListener('click', handleInteraction);
+                        document.removeEventListener('touchstart', handleInteraction);
+                    };
+                    document.addEventListener('click', handleInteraction);
+                    document.addEventListener('touchstart', handleInteraction);
                 });
             }
         }
@@ -85,10 +88,8 @@ const dialogues = [
             // Show the wake overlay after the pause
             wakeOverlay.style.display = 'flex';
             
-            // Start BGM with a slight delay
-            setTimeout(() => {
-                initBGM();
-            }, 1000);
+            // Start BGM immediately after user interaction
+            initBGM();
             
             // Wait for boot animation to complete before showing dialogue
             setTimeout(() => {
