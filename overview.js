@@ -3,23 +3,8 @@ let bgm;
 let audioContext = null;
 let typingSound = null;
 
-// Function to initialize audio context and sounds
-function initAudio() {
-    if (!audioContext) {
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {
-            console.log('Web Audio API not supported');
-        }
-    }
-    
-    if (!typingSound) {
-        typingSound = new Audio('sound/typing.mp3');
-        typingSound.volume = 0.4;
-        typingSound.load();
-    }
-
-    // Initialize BGM if it should be playing
+// Function to initialize and play BGM
+function initBGM() {
     const shouldPlayBGM = sessionStorage.getItem('bgmPlaying') === 'true';
     const bgmPosition = parseFloat(sessionStorage.getItem('bgmPosition') || '0');
     
@@ -49,37 +34,37 @@ function initAudio() {
 
 // Fix the missing setupScanButton function
 function setupScanButton() {
-    const scanBtn = document.querySelector('.scan-btn');
-    if (!scanBtn) return;
+  const scanBtn = document.querySelector('.scan-btn');
+  if (!scanBtn) return;
+  
+  // We need to remove any existing listeners to avoid duplicates
+  const newScanBtn = scanBtn.cloneNode(true);
+  scanBtn.parentNode.replaceChild(newScanBtn, scanBtn);
+  
+  newScanBtn.addEventListener('click', () => {
+    if (bgm) {
+      // Don't reset the BGM position to 0, just store current position
+      sessionStorage.setItem('bgmPlaying', 'true');
+      sessionStorage.setItem('bgmPosition', bgm.currentTime);
+      bgm.pause();
+    }
     
-    // We need to remove any existing listeners to avoid duplicates
-    const newScanBtn = scanBtn.cloneNode(true);
-    scanBtn.parentNode.replaceChild(newScanBtn, scanBtn);
-    
-    newScanBtn.addEventListener('click', () => {
-        if (bgm) {
-            // Don't reset the BGM position to 0, just store current position
-            sessionStorage.setItem('bgmPlaying', 'true');
-            sessionStorage.setItem('bgmPosition', bgm.currentTime);
-            bgm.pause();
-        }
-        
-        const narrativeSessionId = sessionStorage.getItem('narrativeSessionId');
-        if (narrativeSessionId && window.firebaseDb) {
-            const { database, ref, set } = window.firebaseDb;
-            set(ref(database, `status/${narrativeSessionId}`), {
-                step: 'start_scan',
-                timestamp: Date.now()
-            }).then(() => {
-                location.href = 'personal-tests/personal-test.html';
-            }).catch((err) => {
-                console.error("Failed to write to Firebase:", err);
-                location.href = 'personal-tests/personal-test.html';
-            });
-        } else {
-            location.href = 'personal-tests/personal-test.html';
-        }
-    });
+    const narrativeSessionId = sessionStorage.getItem('narrativeSessionId');
+    if (narrativeSessionId && window.firebaseDb) {
+      const { database, ref, set } = window.firebaseDb;
+      set(ref(database, `status/${narrativeSessionId}`), {
+          step: 'start_scan',
+          timestamp: Date.now()
+      }).then(() => {
+          location.href = 'personal-tests/personal-test.html';
+      }).catch((err) => {
+          console.error("Failed to write to Firebase:", err);
+          location.href = 'personal-tests/personal-test.html';
+      });
+    } else {
+      location.href = 'personal-tests/personal-test.html';
+    }
+  });
 }
 
 function waitForFirebaseAndStart() {
@@ -97,13 +82,19 @@ function waitForFirebaseAndStart() {
 
 // Wait for DOM to load before accessing elements
 document.addEventListener('DOMContentLoaded', async function() {
-    // Initialize audio on first user interaction
+    // Create audio context for iOS compatibility
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+        console.log('Web Audio API not supported');
+    }
+
+    // Initialize BGM on first user interaction
     const initAudioOnInteraction = async () => {
-        await initAudio();
         if (audioContext && audioContext.state === 'suspended') {
             await audioContext.resume();
         }
-        // Remove all interaction listeners after first successful initialization
+        initBGM();
         document.removeEventListener('click', initAudioOnInteraction);
         document.removeEventListener('touchstart', initAudioOnInteraction);
     };
@@ -112,21 +103,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.addEventListener('click', initAudioOnInteraction);
     document.addEventListener('touchstart', initAudioOnInteraction);
 
-    // Also try to initialize audio immediately if BGM should be playing
-    const shouldPlayBGM = sessionStorage.getItem('bgmPlaying') === 'true';
-    if (shouldPlayBGM) {
-        initAudio();
-    }
+    // Also try to initialize BGM immediately
+    initBGM();
+
+    // Preload typing sound
+    typingSound = new Audio('sound/typing.mp3');
+    typingSound.volume = 0.4;
+    typingSound.load();
 
     // Modified typing effect for overview page
     async function typeText(element, text) {
         const originalText = text;  // Store the original text
         element.textContent = '';   // Clear the element
-        
-        // Ensure audio is initialized
-        if (!typingSound) {
-            await initAudio();
-        }
         
         // Resume audio context if it was suspended
         if (audioContext && audioContext.state === 'suspended') {
