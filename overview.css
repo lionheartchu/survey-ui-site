@@ -43,11 +43,16 @@ body {
   position: relative;
   width: 100%;
   max-width: 400px;
+  min-width: 300px;
   z-index: 1;
+  margin: 0 auto;
 }
 .body-img {
   width: 100%;
+  height: auto;
+  min-height: 400px;
   opacity: 0.85;
+  object-fit: contain;
 }
 .dot {
   position: absolute;
@@ -410,4 +415,24 @@ body {
 
 .dot.feet.active::after {
   transform: translateX(-50%) scaleY(1) rotate(-133.5deg);
+}
+
+/* Add media query for older iPads */
+@media screen and (max-width: 1024px) and (min-resolution: 1dppx) {
+  .body-map {
+    min-width: 350px;
+    max-width: 500px;
+  }
+  
+  .body-img {
+    min-height: 500px;
+  }
+  
+  .overview-grid {
+    gap: 30px; /* Reduce gap on smaller screens */
+  }
+  
+  .info-panel {
+    min-width: 280px; /* Adjust panel width for better fit */
+  }
 }

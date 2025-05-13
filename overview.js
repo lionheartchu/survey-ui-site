@@ -100,10 +100,38 @@ document.addEventListener('DOMContentLoaded', async function() {
       const originalText = text;  // Store the original text
       element.textContent = '';   // Clear the element
       
+      // Create audio context for iOS compatibility
+      let audioContext = null;
+      try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+          console.log('Web Audio API not supported');
+      }
+      
       // Play typing sound once for the whole sentence
       const typingSound = new Audio('sound/typing.mp3');
       typingSound.volume = 0.4;
-      typingSound.play();
+      
+      // Resume audio context if it was suspended (iOS requirement)
+      if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume();
+      }
+      
+      // Play with proper error handling
+      const playPromise = typingSound.play();
+      if (playPromise !== undefined) {
+          playPromise.catch(err => {
+              console.log("Error playing typing sound:", err);
+              // If autoplay fails, try to play on next interaction
+              const handleInteraction = () => {
+                  typingSound.play();
+                  document.removeEventListener('click', handleInteraction);
+                  document.removeEventListener('touchstart', handleInteraction);
+              };
+              document.addEventListener('click', handleInteraction);
+              document.addEventListener('touchstart', handleInteraction);
+          });
+      }
       
       // Type each character
       for (let i = 0; i < originalText.length; i++) {
